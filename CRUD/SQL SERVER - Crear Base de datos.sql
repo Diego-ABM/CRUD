@@ -3,11 +3,12 @@
 --- ***********************************************************  ---
 
 CREATE DATABASE CRUD;
+GO
 
 USE CRUD;
 
 -- CREAR TABLAS
-
+GO
 -- Guarda los tipos de identifacion que manejara el sistema
 CREATE TABLE tipos_identificacion (
     id INT IDENTITY(1,1) PRIMARY KEY,
@@ -82,6 +83,7 @@ CREATE TABLE cliente_correo_electronico
 	FOREIGN KEY (id_cliente) REFERENCES cliente(id) ON DELETE CASCADE, -- En caso de que se elimine el cliente se eliminan los correos, evita datos huerfanos
 );
 
+GO
 -- INSERTAR DATA
 -- Lista de Paises con codigo de marcasión segun la ISO 3166-1
 INSERT INTO paises (id_codigo_pais, nombre_pais, codigo_marcacion)
@@ -300,11 +302,16 @@ VALUES
     ('Número de Identificación Tributaria (NIT)'), --id 3
     ('Pasaporte'); --id 4
 
+-- Usuario para logueo de prueba
+INSERT INTO usuario
+VALUES 
+('Diego B.','Admin','A109E36947AD56DE1DCA1CC49F0EF8AC9AD9A7B1AA0DF41FB3C4CB73C1FF01EA','admin@domain.com','99','1','999999999');
+
 -- Clientes de prueba
 INSERT INTO cliente 
 VALUES
-('Diego Barreto',77,1,'1111111111'),
-('Alexander Moreno',22,2,'CE451745A45');
+(1,'Diego Barreto',77,1,'1111111111'),
+(1,'Alexander Moreno',22,2,'CE451745A45');
 
 -- Contactos de prueba
 INSERT INTO cliente_contacto 
@@ -326,10 +333,6 @@ INSERT INTO cliente_correo_electronico
 VALUES 
 (1,'diego01@domain.com'),
 (1,'diego02@domain.com'),
-(1,'diego03@domain.com'),
+(2,'diego03@domain.com'),
 (2,'otro01@domain.com');
 
--- Usuario para logueo de prueba
-INSERT INTO usuario
-VALUES 
-('Diego B.','Admin','A109E36947AD56DE1DCA1CC49F0EF8AC9AD9A7B1AA0DF41FB3C4CB73C1FF01EA','admin@domain.com','99','1','999999999');
