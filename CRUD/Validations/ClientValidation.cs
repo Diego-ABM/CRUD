@@ -1,13 +1,13 @@
 ﻿using CRUD.Models;
 using CRUD.Models.bdCrud;
-using CRUD.Models.CrudBD.Structs;
+using CRUD.Models.CrudBD;
 
 namespace CRUD.Validations
 {
     public class ClientValidation
     {
         // Variables
-        private readonly IdentificationTypeStruct _identificationTypeStruct = new();
+        private readonly IdentificationTypeModel _identificationTypeStruct = new();
         private readonly InternalCode _internalCodes = new();
 
         // Funciones
@@ -168,14 +168,14 @@ namespace CRUD.Validations
         private Dictionary<string, List<string>> ValidateIdentificationType(Dictionary<string, List<string>> erros, int IdTipoIdentificacion)
         {
             // Valida si el tipo de identificación es valido
-            bool isOk = _identificationTypeStruct.IdentificationType.ContainsKey(IdTipoIdentificacion);
+            bool isOk = _identificationTypeStruct.IdentificationTypes.ContainsKey(IdTipoIdentificacion);
 
             if (!isOk)
             {
                 // Agrega la entrada al diccionario de errores
                 erros.Add("idTipoIdentificacion",
                     // El Select, recorre la lista y muestra todos los posibles valores
-                    _identificationTypeStruct.IdentificationType
+                    _identificationTypeStruct.IdentificationTypes
                     .Select(kv => $"Posible valor : {kv.Key}; Significado : {kv.Value}")
                     .ToList());
             }

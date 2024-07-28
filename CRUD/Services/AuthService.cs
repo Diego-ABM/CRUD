@@ -17,9 +17,9 @@ namespace CRUD.Services
         }
 
         // Funciones
-        public ResponseControllerModel Login(LoginModel login)
+        public ResponseModel Login(LoginModel login)
         {
-            ResponseControllerModel result = new();
+            ResponseModel result = new();
 
             try
             {

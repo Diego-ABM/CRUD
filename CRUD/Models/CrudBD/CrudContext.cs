@@ -9,7 +9,11 @@ namespace CRUD.Models.bdCrud
         public CrudContext(DbContextOptions<CrudContext> options) : base(options) { }
 
         // Crea intansias de las tablas creadas para manejarse con linq
-        public DbSet<ClientModel> Cliente { get; set; }
         public DbSet<UserModel> Usuario { get; set; }
+        public DbSet<ClientModel> Cliente { get; set; }
+        public DbSet<ClientAddressModel> ClienteDireccion { get; set; }
+        public DbSet<ClientContactModel> ClienteContacto { get; set; }
+        public DbSet<ClientEmailModel> ClienteCorreoElectronico { get; set; }
+
     }
 }

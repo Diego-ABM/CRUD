@@ -28,7 +28,7 @@ namespace CRUD.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel login)
         {
-            ResponseControllerModel response = new();
+            ResponseModel response = new();
 
             try
             {

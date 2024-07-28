@@ -1,42 +1,42 @@
 ﻿using CRUD.Models;
 using CRUD.Models.bdCrud;
-using CRUD.Services.Interfaces;
+using CRUD.Models.CrudBD;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRUD.Services
 {
-    public class ClientService : IClientService
+    public class ClientContactService
     {
         // Variables
         private readonly CrudContext _crudContext;
         private readonly InternalCode _internalCode = new();
 
         // Cosntructor
-        public ClientService(CrudContext crudContext)
+        public ClientContactService(CrudContext crudContext)
         {
             _crudContext = crudContext;
         }
 
         // Funciones
-        public ResponseModel Create(ClientModel cliente)
+        public ResponseModel Create(ClientContactModel contact)
         {
             ResponseModel response = new();
             try
             {
-                _crudContext.Cliente.Add(cliente);
+                _crudContext.ClienteContacto.Add(contact);
                 int result = _crudContext.SaveChanges();
 
                 // Si se guarda correctamente
                 if (result > 0)
                 {
                     response.Code = _internalCode.Exitoso;
-                    response.Message = "Cliente creado con exito";
+                    response.Message = "Creado con exito";
                     response.Success = true;
                 }
                 else
                 {
                     response.Code = _internalCode.Fallo;
-                    response.Message = "No se pudo crear el cliente";
+                    response.Message = "No se pudo crear.";
                     response.Success = false;
                 }
 
@@ -56,59 +56,60 @@ namespace CRUD.Services
             return response;
 
         }
-        public ResponseModel Read(string numberIdentification)
+        public ResponseModel Read(int idClient)
         {
             ResponseModel response = new();
-            ClientModel? cliente = null;
+            List<ClientContactModel> contact;
 
             try
             {
-                cliente = _crudContext.Cliente.Where(data => data.NumeroIdentificacion == numberIdentification).FirstOrDefault();
+                contact = _crudContext.ClienteContacto.Where(cc => cc.IdCliente == idClient).ToList();
 
-                if (cliente != null)
+                if (contact.Count != 0)
                 {
                     response.Code = _internalCode.Exitoso;
                     response.Success = true;
                     response.Message = "Encontrado.";
-                    response.Data = cliente;
+                    response.Data = contact;
                 }
                 else
                 {
-
-                    response.Code = _internalCode.Exitoso;
+                    response.Code = _internalCode.Fallo;
                     response.Success = false;
-                    response.Message = "Cliente no existe.";
+                    response.Message = "No existe.";
 
                 }
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ocurrio una exepción en el proceso GetByIdentification");
-                Console.WriteLine(ex.Message);
+                response.Code = _internalCode.Error;
+                response.Success = false;
+                response.Message = $"Ocurrio una exepción no controlada {ex.Message}";
             }
 
             return response;
         }
-        public ResponseModel Update(ClientModel cliente)
+        public ResponseModel Update(ClientContactModel contact)
         {
             ResponseModel response = new();
             try
             {
-                _crudContext.Cliente.Update(cliente);
+                _crudContext.ClienteContacto.Update(contact);
+
                 int result = _crudContext.SaveChanges();
 
                 // Si se guarda correctamente
                 if (result > 0)
                 {
                     response.Code = _internalCode.Exitoso;
-                    response.Message = "Cliente actualizado con exito";
+                    response.Message = "Actualizado con exito.";
                     response.Success = true;
                 }
                 else
                 {
                     response.Code = _internalCode.Fallo;
-                    response.Message = "No se pudo crear el cliente";
+                    response.Message = "No se pudo actualizar.";
                     response.Success = false;
                 }
 
@@ -127,40 +128,41 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Delete(string numberIdentification)
+        public ResponseModel Delete(int idClient)
         {
             ResponseModel response = new();
             try
             {
-                ClientModel? client = _crudContext.Cliente.Where(c => c.NumeroIdentificacion == numberIdentification).FirstOrDefault();
+                // Antes de eliminar validamos si existe en BD
+                ClientContactModel? contact = _crudContext.ClienteContacto.Where(cc => cc.IdCliente == idClient).FirstOrDefault();
 
-                // Si no encuentra el cliente
-                if (client == null)
+                // Encontrado
+                if (contact != null)
                 {
-                    response.Code = _internalCode.Fallo;
-                    response.Success = false;
-                    response.Message = "El numero de identificación no existe";
-                }
-                // Cliente encontrado
-                else
-                {
-
-                    _crudContext.Cliente.Remove(client);
+                    _crudContext.ClienteContacto.Remove(contact);
                     int result = _crudContext.SaveChanges();
 
                     // Si se elimina correctamente
                     if (result > 0)
                     {
                         response.Code = _internalCode.Exitoso;
-                        response.Message = "Cliente eliminado con exito";
+                        response.Message = "Eliminado con exito";
                         response.Success = true;
                     }
                     else
                     {
                         response.Code = _internalCode.Fallo;
-                        response.Message = "No se pudo eliminar el cliente";
+                        response.Message = "No se pudo eliminar.";
                         response.Success = false;
                     }
+
+                }
+                // No encontrado
+                else
+                {
+                    response.Code = _internalCode.Fallo;
+                    response.Success = false;
+                    response.Message = "No existe";
                 }
             }
             catch (DbUpdateException ex)

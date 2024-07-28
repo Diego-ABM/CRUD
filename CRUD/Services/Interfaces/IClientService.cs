@@ -5,9 +5,9 @@ namespace CRUD.Services.Interfaces
 {
     public interface IClientService
     {
-        ResponseControllerModel Create(ClientModel client);
-        ResponseControllerModel Read(string numberIdentification);
-        ResponseControllerModel Update(ClientModel cliente);
-        ResponseControllerModel Delete(string numberIdentification);
+        ResponseModel Create(ClientModel client);
+        ResponseModel Read(string numberIdentification);
+        ResponseModel Update(ClientModel cliente);
+        ResponseModel Delete(string numberIdentification);
     }
 }

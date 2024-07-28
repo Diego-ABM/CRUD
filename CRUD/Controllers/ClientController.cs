@@ -27,14 +27,14 @@ namespace CRUD.Controllers
         [HttpPost("Create")]
         public IActionResult Create([FromBody] ClientModel client)
         {
-            ResponseControllerModel responseService = new();
+            ResponseModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = _clientValidation.Create(client);
                 if (validation.Success)
                 {
-                    ResponseControllerModel InsertResult = _clientService.Create(client);
+                    ResponseModel InsertResult = _clientService.Create(client);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -76,7 +76,7 @@ namespace CRUD.Controllers
         [HttpGet("Read/{identificationNumber}")]
         public IActionResult Read(string identificationNumber)
         {
-            ResponseControllerModel response = new();
+            ResponseModel response = new();
 
             try
             {
@@ -132,14 +132,14 @@ namespace CRUD.Controllers
         [HttpPut("Update")]
         public IActionResult Update([FromBody] ClientModel client)
         {
-            ResponseControllerModel responseService = new();
+            ResponseModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = _clientValidation.Update(client);
                 if (validation.Success)
                 {
-                    ResponseControllerModel InsertResult = _clientService.Update(client);
+                    ResponseModel InsertResult = _clientService.Update(client);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -182,7 +182,7 @@ namespace CRUD.Controllers
         public IActionResult Delete(string identificationNumber)
         {
 
-            ResponseControllerModel responseModel = new();
+            ResponseModel responseModel = new();
 
             try
             {
@@ -193,7 +193,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Elimina el cliente y todo lo realcionado a el en BD
-                    ResponseControllerModel result = _clientService.Delete(identificationNumber);
+                    ResponseModel result = _clientService.Delete(identificationNumber);
 
                     //Si el resultado es exitoso
                     if (result.Success)

@@ -1,6 +1,5 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
-using CRUD.Models.CrudBD.Structs;
 using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
@@ -8,7 +7,7 @@ namespace CRUD.Validations
     public class UserValidation
     {
         // Variables
-        private readonly IdentificationTypeStruct _identificationTypeStruct = new();
+        private readonly IdentificationTypeModel _identificationTypeStruct = new();
         private readonly InternalCode _internalCodes = new();
 
         // Funciones
@@ -212,14 +211,14 @@ namespace CRUD.Validations
         private Dictionary<string, List<string>> ValidateIdentificationType(Dictionary<string, List<string>> erros, int IdTipoIdentificacion)
         {
             // Valida si el tipo de identificaion es el esperado
-            bool isOk = _identificationTypeStruct.IdentificationType.ContainsKey(IdTipoIdentificacion);
+            bool isOk = _identificationTypeStruct.IdentificationTypes.ContainsKey(IdTipoIdentificacion);
 
             if (!isOk)
             {
                 // Agrega la entrada al diccionario
                 erros.Add("idTipoIdentificacion",
                     // El Select, recorre la lista y muestra todos los posibles valores
-                    _identificationTypeStruct.IdentificationType
+                    _identificationTypeStruct.IdentificationTypes
                     .Select(kv => $"Posible valor : {kv.Key}; Significado : {kv.Value}")
                     .ToList());
             }
@@ -253,7 +252,7 @@ namespace CRUD.Validations
             {
                 erros.Add("correoElectronico", ["El formato no es valido."]);
             }
-            else if (email.Length > 20)
+            else if (email.Length > 100)
             {
                 erros.Add("correoElectronico", ["Numero Maximo de caracteres aceptados 100."]);
             }

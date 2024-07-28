@@ -54,8 +54,15 @@ namespace CRUD
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<UserService>();
             services.AddScoped<AuthService>();
+            services.AddScoped<ClientContactService>();
+            services.AddScoped<ClientAddressService>();
+            services.AddScoped<ClientEmailService>();
+
 
             services.AddScoped<ClientValidation>();
+            services.AddScoped<ClientContactValidation>();
+            services.AddScoped<ClientAddressValidation>();
+            services.AddScoped<ClientEmailValidation>();
             services.AddScoped<UserValidation>();
             services.AddScoped<AuthValidation>();
         }

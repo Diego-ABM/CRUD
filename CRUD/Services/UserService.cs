@@ -21,9 +21,9 @@ namespace CRUD.Services
 
         // Funciones
         // Registra el usuario
-        public ResponseControllerModel Create(UserModel user)
+        public ResponseModel Create(UserModel user)
         {
-            ResponseControllerModel response = new();
+            ResponseModel response = new();
             try
             {
                 // Validamos si el correo no se ecuentra registrado, ya que es tipo UNIQUE
@@ -76,9 +76,9 @@ namespace CRUD.Services
 
         }
         // Consulta el usuario por correo
-        public ResponseControllerModel Read(string email)
+        public ResponseModel Read(string email)
         {
-            ResponseControllerModel response = new();
+            ResponseModel response = new();
             UserModel? usuario = null;
 
             try
@@ -108,9 +108,9 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseControllerModel Update(UserModel user)
+        public ResponseModel Update(UserModel user)
         {
-            ResponseControllerModel response = new();
+            ResponseModel response = new();
             try
             {
                 // Validamos si el correo no se ecuentra registrado, ya que es tipo UNIQUE
@@ -163,9 +163,9 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseControllerModel Delete(string email)
+        public ResponseModel Delete(string email)
         {
-            ResponseControllerModel response = new();
+            ResponseModel response = new();
             try
             {
                 UserModel? usuer = _crudContext.Usuario.Where(c => c.CorreoElectronico == email).FirstOrDefault();
