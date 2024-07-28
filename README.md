@@ -8,13 +8,11 @@
 
 ## Características
 
-- Listar las principales características de tu API.
-
-Autenticación : Utiliza JWT (Json Web Token) para la autenticación del usuario y Barer Token en los encabezados para permmitir el uso de los endpoints.
-Gestión de recursos : Maneja inyeccion de dependencias con ciclos de Vida SCOPE, metodos asincronos y ejecucion de validaciones en multihilo.
-Conexion BD : Utiliza EntityFrameworCore, con consultas LINQ, cadenas de conexion se definen en appsettings.json.
-Login y registro de usuario: Las contraseñas se almacenan en HEX SHA-256 
-Validaciones : El api, cuenta con validaciones para cada servicio, lo que indica si un campo es requerido o no cumple con su formato.
+- Autenticación : Utiliza JWT (Json Web Token) para la autenticación del usuario y Barer Token en los encabezados para permmitir el uso de los endpoints.
+- Gestión de recursos : Maneja inyeccion de dependencias con ciclos de Vida SCOPE, metodos asincronos y ejecucion de validaciones en multihilo.
+- Conexion BD : Utiliza EntityFrameworCore, con consultas LINQ, cadenas de conexion se definen en appsettings.json.
+- Login y registro de usuario: Las contraseñas se almacenan en HEX SHA-256 
+- Validaciones : El api, cuenta con validaciones para cada servicio, lo que indica si un campo es requerido o no cumple con su formato.
 
 
 ## Requisitos Previos 
