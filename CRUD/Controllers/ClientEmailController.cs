@@ -70,7 +70,7 @@ namespace CRUD.Controllers
         // Consulta un cliente por su numero de identificación
         [Authorize]
         [HttpGet("ReadAsync/")]
-        public async Task<IActionResult> ReadAsync([FromBody] int idClient, string email = "")
+        public async Task<IActionResult> ReadAsync(int idClient, string email = "")
         {
             ResponseModel response = new();
             ValidationModel validation;

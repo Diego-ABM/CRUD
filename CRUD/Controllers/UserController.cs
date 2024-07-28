@@ -1,7 +1,6 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
 using CRUD.Services;
-using CRUD.Validations;
 using CRUD.Validations.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,7 @@ namespace CRUD.Controllers
         private readonly IUserService _userService;
         private readonly IUserValidation _userValidation;
 
-        public UserController(UserService clientService, UserValidation userValidation)
+        public UserController(IUserService clientService, IUserValidation userValidation)
         {
             _userService = clientService;
             _userValidation = userValidation;
