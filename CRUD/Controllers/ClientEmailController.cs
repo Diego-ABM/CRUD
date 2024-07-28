@@ -24,14 +24,14 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpPost("Create")]
-        public IActionResult Create([FromBody] ClientEmailModel email)
+        [HttpPost("CreateAsync")]
+        public async Task<IActionResult> CreateAsync([FromBody] ClientEmailModel email)
         {
             ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientEmailValidation.Create(email);
+                ValidationModel validation = await _clientEmailValidation.CreateAsync(email);
                 if (validation.Success)
                 {
                     response = _clientEmailService.Create(email);
@@ -69,8 +69,8 @@ namespace CRUD.Controllers
 
         // Consulta un cliente por su numero de identificación
         [Authorize]
-        [HttpGet("Read/")]
-        public IActionResult Read([FromBody] int idClient, string email = "")
+        [HttpGet("ReadAsync/")]
+        public async Task<IActionResult> ReadAsync([FromBody] int idClient, string email = "")
         {
             ResponseModel response = new();
             ValidationModel validation;
@@ -78,9 +78,9 @@ namespace CRUD.Controllers
             {
                 // Valida el parametro ocpional
                 if (string.IsNullOrEmpty(email))
-                    validation = _clientEmailValidation.ReadOrDelete(idClient);
+                    validation = await _clientEmailValidation.ReadOrDeleteAsync(idClient);
                 else
-                    validation = _clientEmailValidation.ReadOrDelete(idClient, email);
+                    validation = await _clientEmailValidation.ReadOrDeleteAsync(idClient, email);
 
 
                 // Validaciones superadas
@@ -129,14 +129,14 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpPut("Update")]
-        public IActionResult Update([FromBody] ClientEmailModel email)
+        [HttpPut("UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync([FromBody] ClientEmailModel email)
         {
             ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientEmailValidation.Update(email);
+                ValidationModel validation = await _clientEmailValidation.UpdateAsync(email);
                 if (validation.Success)
                 {
                     response = _clientEmailService.Update(email);
@@ -172,8 +172,8 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpDelete("Delete/{idClient}")]
-        public IActionResult Delete(int idClient)
+        [HttpDelete("DeleteAsync/{idClient}")]
+        public async Task<IActionResult> DeleteAsync(int idClient)
         {
 
             ResponseModel response = new();
@@ -181,7 +181,7 @@ namespace CRUD.Controllers
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _clientEmailValidation.ReadOrDelete(idClient);
+                ValidationModel validation = await _clientEmailValidation.ReadOrDeleteAsync(idClient);
 
                 // Cumple con el formato requerido
                 if (validation.Success)

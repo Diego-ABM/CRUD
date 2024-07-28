@@ -1,5 +1,6 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
@@ -11,18 +12,24 @@ namespace CRUD.Validations
         private readonly InternalCode _internalCodes = new();
 
         // Funciones
-        public ValidationModel Create(ClientEmailModel clientEmail)
+        public async Task<ValidationModel> CreateAsync(ClientEmailModel clientEmail)
         {
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
+                // Crear una lista de tareas
+                List<Task> tasks =
+                    [
+                        Task.Run(() => ValidateIdClient(erros, clientEmail.IdCliente)),
+                        Task.Run(() => ValidateEmail(erros, clientEmail.CorreoElectronico))
+                    ];
 
-                ValidateId(erros, clientEmail.IdCliente);
-                ValidateEmail(erros, clientEmail.CorreoElectronico);
+                await Task.WhenAll(tasks);
 
-                validation.Erros = erros;
+
+                validation.Erros = erros.ToDictionary();
 
                 if (validation.Erros.Count == 0)
                 {
@@ -48,27 +55,32 @@ namespace CRUD.Validations
             // Valida si el tipo de documento ingresado es el esperado
             return validation;
         }
-        public ValidationModel ReadOrDelete(int idClient, string email = "")
+        public async Task<ValidationModel> ReadOrDeleteAsync(int idClient, string email = "")
         {
 
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
                 // Si el parametro opcional no fue diligenciado
                 if (string.IsNullOrEmpty(email))
                 {
-                    ValidateId(erros, idClient);
+                    await Task.Run(() => ValidateId(erros, idClient));
                 }
                 // Si se diligencio
                 else
                 {
-                    ValidateId(erros, idClient);
-                    ValidateEmail(erros, email);
+                    List<Task> tasks =
+                        [
+                            Task.Run(() => ValidateId(erros, idClient)),
+                            Task.Run(() => ValidateEmail(erros, email))
+                        ];
+
+                    await Task.WhenAll(tasks);
                 }
 
-                validation.Erros = erros;
+                validation.Erros = erros.ToDictionary();
 
                 if (validation.Erros.Count == 0)
                 {
@@ -92,19 +104,28 @@ namespace CRUD.Validations
             }
             return validation;
         }
-
-        public ValidationModel Update(ClientEmailModel clientEmail)
+        public async Task<ValidationModel> UpdateAsync(ClientEmailModel clientEmail)
         {
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
+                // Crear una lista de tareas
+                List<Task> tasks =
+                    [
+                        Task.Run(() => ValidateId(erros, clientEmail.Id)),
+                        Task.Run(() => ValidateIdClient(erros, clientEmail.IdCliente)),
+                        Task.Run(() => ValidateEmail(erros, clientEmail.CorreoElectronico))
+                    ];
+
+                await Task.WhenAll(tasks);
+
                 ValidateId(erros, clientEmail.Id);
                 ValidateId(erros, clientEmail.IdCliente);
                 ValidateEmail(erros, clientEmail.CorreoElectronico);
 
-                validation.Erros = erros;
+                validation.Erros = erros.ToDictionary();
 
                 if (validation.Erros.Count == 0)
                 {
@@ -132,31 +153,33 @@ namespace CRUD.Validations
         }
 
         // Validaciones
-        private Dictionary<string, List<string>> ValidateId(Dictionary<string, List<string>> erros, int idClient)
+        private static void ValidateId(ConcurrentDictionary<string, List<string>> erros, int id)
         {
-            if (idClient == 0) erros.Add("id", ["El id es requerido, su valor no puede ser 0"]);
+            if (id == 0) erros.TryAdd("id", ["El id es requerido, su valor no puede ser 0"]);
 
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidateEmail(Dictionary<string, List<string>> erros, string email)
+        private static void ValidateIdClient(ConcurrentDictionary<string, List<string>> erros, int idClient)
+        {
+            if (idClient == 0) erros.TryAdd("idCliente", ["El id es requerido, su valor no puede ser 0"]);
+
+        }
+        private static void ValidateEmail(ConcurrentDictionary<string, List<string>> erros, string email)
         {
             // Expresión regular para validar que el strign sea un correo electrónico
             string pattern = @"^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$";
 
             if (string.IsNullOrEmpty(email))
             {
-                erros.Add("correoElectronico", ["Correo electronico es requerido."]);
+                erros.TryAdd("correoElectronico", ["Correo electronico es requerido."]);
             }
             else if (!Regex.IsMatch(email, pattern))
             {
-                erros.Add("correoElectronico", ["El formato no es valido."]);
+                erros.TryAdd("correoElectronico", ["El formato no es valido."]);
             }
             else if (email.Length > 100)
             {
-                erros.Add("correoElectronico", ["Numero Maximo de caracteres aceptados 100."]);
+                erros.TryAdd("correoElectronico", ["Numero Maximo de caracteres aceptados 100."]);
             }
-
-            return erros;
 
         }
     }

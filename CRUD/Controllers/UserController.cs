@@ -25,14 +25,14 @@ namespace CRUD.Controllers
         // Crea un cliente
 
         [Authorize]
-        [HttpPost("Create")]
-        public IActionResult Create([FromBody] UserModel user)
+        [HttpPost("CreateAsync")]
+        public async Task<IActionResult> CreateAsync([FromBody] UserModel user)
         {
             ResponseModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _userValidation.Create(user);
+                ValidationModel validation = await _userValidation.CreateAsync(user);
                 if (validation.Success)
                 {
                     ResponseModel InsertResult = _userService.Create(user);
@@ -74,15 +74,15 @@ namespace CRUD.Controllers
 
         // Consulta un cliente por su numero de identificación
         [Authorize]
-        [HttpGet("Read/{email}")]
-        public IActionResult Read(string email)
+        [HttpGet("ReadAsync/{email}")]
+        public async Task<IActionResult> ReadAsync(string email)
         {
             ResponseModel responseModel = new();
 
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _userValidation.ReadOrDelete(email);
+                ValidationModel validation = await _userValidation.ReadOrDeleteAsync(email);
 
                 // Cumple con el formato requerido
                 if (validation.Success)
@@ -135,14 +135,14 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpPut("Update")]
-        public IActionResult Update([FromBody] UserModel user)
+        [HttpPut("UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync([FromBody] UserModel user)
         {
             ResponseModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _userValidation.Update(user);
+                ValidationModel validation = await _userValidation.UpdateAsync(user);
                 if (validation.Success)
                 {
                     ResponseModel InsertResult = _userService.Update(user);
@@ -184,8 +184,8 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpDelete("Delete/{email}")]
-        public IActionResult Delete(string email)
+        [HttpDelete("DeleteAsync/{email}")]
+        public async Task<IActionResult> DeleteAsync(string email)
         {
 
             ResponseModel responseModel = new();
@@ -193,7 +193,7 @@ namespace CRUD.Controllers
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _userValidation.ReadOrDelete(email);
+                ValidationModel validation = await _userValidation.ReadOrDeleteAsync(email);
 
                 // Cumple con el formato requerido
                 if (validation.Success)

@@ -25,14 +25,14 @@ namespace CRUD.Controllers
         // Crea un cliente
 
         [Authorize]
-        [HttpPost("Create")]
-        public IActionResult Create([FromBody] ClientAddressModel address)
+        [HttpPost("CreateAsync")]
+        public async Task<IActionResult> CreateAsync([FromBody] ClientAddressModel address)
         {
             ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientAddressValidation.Create(address);
+                ValidationModel validation = await _clientAddressValidation.CreateAsync(address);
                 if (validation.Success)
                 {
                     response = _clientAddressService.Create(address);
@@ -70,15 +70,15 @@ namespace CRUD.Controllers
 
         // Consulta un cliente por su numero de identificación
         [Authorize]
-        [HttpGet("Read/{idClient}")]
-        public IActionResult Read(int idClient)
+        [HttpGet("ReadAsync/{idClient}")]
+        public async Task<IActionResult> ReadAsync(int idClient)
         {
             ResponseModel response = new();
 
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _clientAddressValidation.ReadOrDelete(idClient);
+                ValidationModel validation = await _clientAddressValidation.ReadOrDeleteAsync(idClient);
 
                 // Cumple con el formato requerido
                 if (validation.Success)
@@ -123,14 +123,14 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpPut("Update")]
-        public IActionResult Update([FromBody] ClientAddressModel address)
+        [HttpPut("UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync([FromBody] ClientAddressModel address)
         {
             ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientAddressValidation.Update(address);
+                ValidationModel validation = await _clientAddressValidation.UpdateAsync(address);
                 if (validation.Success)
                 {
                     response = _clientAddressService.Update(address);
@@ -166,8 +166,8 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpDelete("Delete/{idClient}")]
-        public IActionResult Delete(int idClient)
+        [HttpDelete("DeleteAsync/{idClient}")]
+        public async Task<IActionResult> DeleteAsync(int idClient)
         {
 
             ResponseModel response = new();
@@ -175,7 +175,7 @@ namespace CRUD.Controllers
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _clientAddressValidation.ReadOrDelete(idClient);
+                ValidationModel validation = await _clientAddressValidation.ReadOrDeleteAsync(idClient);
 
                 // Cumple con el formato requerido
                 if (validation.Success)

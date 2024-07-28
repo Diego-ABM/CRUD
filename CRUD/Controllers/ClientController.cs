@@ -24,14 +24,14 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpPost("Create")]
-        public IActionResult Create([FromBody] ClientModel client)
+        [HttpPost("CreateAsync")]
+        public async Task<IActionResult> CreateAsync([FromBody] ClientModel client)
         {
             ResponseModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientValidation.Create(client);
+                ValidationModel validation = await _clientValidation.CreateAsync(client);
                 if (validation.Success)
                 {
                     ResponseModel InsertResult = _clientService.Create(client);
@@ -56,7 +56,7 @@ namespace CRUD.Controllers
                 {
                     responseService.Code = (int)HttpStatusCode.BadRequest;
                     responseService.Message = validation.Message;
-                    responseService.RequestErros = validation.Erros;
+                    responseService.RequestErros = validation.Erros.ToDictionary();
 
                     return BadRequest(responseService);
 
@@ -73,15 +73,15 @@ namespace CRUD.Controllers
 
         // Consulta un cliente por su numero de identificación
         [Authorize]
-        [HttpGet("Read/{identificationNumber}")]
-        public IActionResult Read(string identificationNumber)
+        [HttpGet("ReadAsync/{identificationNumber}")]
+        public async Task<IActionResult> ReadAsync(string identificationNumber)
         {
             ResponseModel response = new();
 
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _clientValidation.ReadOrDelete(identificationNumber);
+                ValidationModel validation = await _clientValidation.ReadOrDeleteAsync(identificationNumber);
 
                 // Cumple con el formato requerido
                 if (validation.Success)
@@ -129,14 +129,14 @@ namespace CRUD.Controllers
 
         // Crea un cliente.
         [Authorize]
-        [HttpPut("Update")]
-        public IActionResult Update([FromBody] ClientModel client)
+        [HttpPut("UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync([FromBody] ClientModel client)
         {
             ResponseModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientValidation.Update(client);
+                ValidationModel validation = await _clientValidation.UpdateAsync(client);
                 if (validation.Success)
                 {
                     ResponseModel InsertResult = _clientService.Update(client);
@@ -176,10 +176,10 @@ namespace CRUD.Controllers
 
         }
 
-        // Crea un cliente
+        // Elimina un cliente
         [Authorize]
-        [HttpDelete("Delete/{identificationNumber}")]
-        public IActionResult Delete(string identificationNumber)
+        [HttpDelete("DeleteAsync/{identificationNumber}")]
+        public async Task<IActionResult> DeleteAsync(string identificationNumber)
         {
 
             ResponseModel responseModel = new();
@@ -187,7 +187,7 @@ namespace CRUD.Controllers
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _clientValidation.ReadOrDelete(identificationNumber);
+                ValidationModel validation = await _clientValidation.ReadOrDeleteAsync(identificationNumber);
 
                 // Cumple con el formato requerido
                 if (validation.Success)

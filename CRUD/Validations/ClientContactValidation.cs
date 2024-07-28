@@ -1,5 +1,7 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
@@ -11,20 +13,25 @@ namespace CRUD.Validations
         private readonly InternalCode _internalCodes = new();
 
         // Funciones
-        public ValidationModel Create(ClientContactModel contact)
+        public async Task<ValidationModel> CreateAsync(ClientContactModel contact)
         {
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
+                // Crear una lista de tareas
+                List<Task> tasks =
+                    [
+                        Task.Run(() => ValidateId(erros, contact.IdCliente)),
+                        Task.Run(() => ValidateIdcountry(erros, contact.IdCodigoPais)),
+                        Task.Run(() => ValidatePhoneType(erros, contact.TipoTelefono)),
+                        Task.Run(() =>  ValidatePhoneNumber(erros, contact.NumeroTelefono))
+                    ];
 
-                ValidateId(erros, contact.IdCliente);
-                ValidateIdcountry(erros, contact.IdCodigoPais);
-                ValidatePhoneType(erros, contact.TipoTelefono);
-                ValidatePhoneNumber(erros, contact.NumeroTelefono);
+                await Task.WhenAll(tasks);
 
-                validation.Erros = erros;
+                validation.Erros = erros.ToDictionary();
 
                 if (validation.Erros.Count == 0)
                 {
@@ -50,19 +57,19 @@ namespace CRUD.Validations
             // Valida si el tipo de documento ingresado es el esperado
             return validation;
         }
-        public ValidationModel ReadOrDelete(int idClient)
+        public async Task<ValidationModel> ReadOrDeleteAsync(int idClient)
         {
 
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
-                ValidateId(erros, idClient);
+                await Task.Run(() => ValidateId(erros, idClient));
 
-                validation.Erros = erros;
+                validation.Erros = erros.ToDictionary();
 
-                if (validation.Erros.Count == 0)
+                if (validation.Erros.IsNullOrEmpty())
                 {
                     validation.Code = _internalCodes.Exitoso;
                     validation.Success = true;
@@ -84,20 +91,26 @@ namespace CRUD.Validations
             }
             return validation;
         }
-        public ValidationModel Update(ClientContactModel contact)
+        public async Task<ValidationModel> UpdateAsync(ClientContactModel contact)
         {
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
-                ValidateId(erros, contact.Id);
-                ValidateId(erros, contact.IdCliente);
-                ValidateIdcountry(erros, contact.IdCodigoPais);
-                ValidatePhoneType(erros, contact.TipoTelefono);
-                ValidatePhoneNumber(erros, contact.NumeroTelefono);
+                // Crear una lista de tareas
+                List<Task> tasks =
+                    [
+                        Task.Run(() => ValidateId(erros, contact.Id)),
+                        Task.Run(() => ValidateIdClient(erros, contact.IdCliente)),
+                        Task.Run(() => ValidateIdcountry(erros, contact.IdCodigoPais)),
+                        Task.Run(() => ValidatePhoneType(erros, contact.TipoTelefono)),
+                        Task.Run(() =>  ValidatePhoneNumber(erros, contact.NumeroTelefono))
+                    ];
 
-                validation.Erros = erros;
+                await Task.WhenAll(tasks);
+
+                validation.Erros = erros.ToDictionary();
 
                 if (validation.Erros.Count == 0)
                 {
@@ -125,64 +138,63 @@ namespace CRUD.Validations
         }
 
         // Validaciones
-        private Dictionary<string, List<string>> ValidateId(Dictionary<string, List<string>> erros, int idClient)
+        private static void ValidateId(ConcurrentDictionary<string, List<string>> erros, int id)
         {
-            if (idClient == 0) erros.Add("id", ["El id es requerido, su valor no puede ser 0"]);
+            if (id == 0) erros.TryAdd("id", ["El id es requerido, su valor no puede ser 0"]);
 
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidateIdcountry(Dictionary<string, List<string>> erros, string idCodeCountri)
+        private static void ValidateIdClient(ConcurrentDictionary<string, List<string>> erros, int idClient)
         {
-            // Any(char.IsDigit) valida que el nombre no tenga numeros
+            if (idClient == 0) erros.TryAdd("idCliente", ["El id es requerido, su valor no puede ser 0"]);
 
+        }
+        private void ValidateIdcountry(ConcurrentDictionary<string, List<string>> erros, string idCodeCountri)
+        {
+            // Valida si el codigo ingresado se encuentra en la lista
             bool exist = _countryModel.Countries.ContainsKey(idCodeCountri);
 
             if (!exist)
             {
                 // Agrega la entrada al diccionario
-                erros.Add("idCodigoPais",
+                erros.TryAdd("idCodigoPais",
                     // El Select, recorre la lista y muestra todos los posibles valores
                     _countryModel.Countries
                     .Select(kv => $"Codigo valido : {kv.Key}; Significado : {kv.Value}")
                     .ToList());
             }
-
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidatePhoneType(Dictionary<string, List<string>> erros, string phone)
+        private static void ValidatePhoneType(ConcurrentDictionary<string, List<string>> erros, string phone)
         {
             // Valores aceptados en BD fijo o movil
 
             if (phone != "fijo" || phone != "movil")
             {
-                erros.Add("tipoTelefono", ["Solo se aceptan valores fijo o movil"]);
+                erros.TryAdd("tipoTelefono", ["Solo se aceptan valores fijo o movil"]);
             }
 
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidatePhoneNumber(Dictionary<string, List<string>> erros, string phone)
+        private static void ValidatePhoneNumber(ConcurrentDictionary<string, List<string>> erros, string phone)
         {
             // Expresion regular para validar que no tenga espacios en blanco
             string pattern = @"^\S+$";
 
             if (string.IsNullOrEmpty(phone))
             {
-                erros.Add("numeroTelefono", ["No puede estar vacio"]);
+                erros.TryAdd("numeroTelefono", ["No puede estar vacio"]);
             }
             else if (!Regex.IsMatch(phone, pattern))
             {
-                erros.Add("numeroTelefono", ["No puede debe contener espacios en blanco."]);
+                erros.TryAdd("numeroTelefono", ["No puede debe contener espacios en blanco."]);
             }
             else if (phone.Length > 15)
             {
-                erros.Add("numeroTelefono", ["Numero maximo de caracteres permitidos 15."]);
+                erros.TryAdd("numeroTelefono", ["Numero maximo de caracteres permitidos 15."]);
             }
             else if (phone.Any(char.IsLetter))
             {
-                erros.Add("numeroTelefono", ["Contiene texto"]);
+                erros.TryAdd("numeroTelefono", ["Contiene texto"]);
             }
 
-            return erros;
         }
 
     }

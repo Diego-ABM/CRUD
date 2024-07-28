@@ -1,6 +1,8 @@
 ﻿using CRUD.Models;
 using CRUD.Models.bdCrud;
 using CRUD.Models.CrudBD;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Concurrent;
 
 namespace CRUD.Validations
 {
@@ -11,22 +13,29 @@ namespace CRUD.Validations
         private readonly InternalCode _internalCodes = new();
 
         // Funciones
-        public ValidationModel Create(ClientModel client)
+        public async Task<ValidationModel> CreateAsync(ClientModel client)
         {
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
-                ValidateId(erros, client.IdUsuario);
-                ValidateName(erros, client.Nombre);
-                ValidateAge(erros, client.Edad);
-                ValidateIdentificationType(erros, client.IdTipoIdentificacion);
-                ValidateIdentification(erros, client.NumeroIdentificacion);
+                // Crear una lista de tareas
+                List<Task> tasks =
+                [
+                    Task.Run(() => ValidateId(erros, client.IdUsuario)),
+                    Task.Run(() => ValidateName(erros, client.Nombre)),
+                    Task.Run(() => ValidateAge(erros, client.Edad)),
+                    Task.Run(() => ValidateIdentificationType(erros, client.IdTipoIdentificacion)),
+                    Task.Run(() => ValidateIdentification(erros, client.NumeroIdentificacion))
+                ];
 
-                validation.Erros = erros;
+                // Esperar a que todas las tareas se completen
+                await Task.WhenAll(tasks);
 
-                if (validation.Erros.Count == 0)
+                validation.Erros = erros.ToDictionary();
+
+                if (validation.Erros.IsNullOrEmpty())
                 {
                     validation.Code = _internalCodes.Exitoso;
                     validation.Success = true;
@@ -50,17 +59,17 @@ namespace CRUD.Validations
             // Valida si el tipo de documento ingresado es el esperado
             return validation;
         }
-        public ValidationModel ReadOrDelete(string identificationNumber)
+        public async Task<ValidationModel> ReadOrDeleteAsync(string identificationNumber)
         {
 
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
-                ValidateIdentification(erros, identificationNumber);
+                await Task.Run(() => ValidateIdentification(erros, identificationNumber));
 
-                validation.Erros = erros;
+                validation.Erros = erros.ToDictionary();
 
                 if (validation.Erros.Count == 0)
                 {
@@ -84,21 +93,29 @@ namespace CRUD.Validations
             }
             return validation;
         }
-        public ValidationModel Update(ClientModel client)
+        public async Task<ValidationModel> UpdateAsync(ClientModel client)
         {
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
-                ValidateId(erros, client.Id);
-                ValidateId(erros, client.IdUsuario);
-                ValidateName(erros, client.Nombre);
-                ValidateAge(erros, client.Edad);
-                ValidateIdentificationType(erros, client.IdTipoIdentificacion);
-                ValidateIdentification(erros, client.NumeroIdentificacion);
+                // Crear una lista de tareas
+                List<Task> tasks =
+                [
 
-                validation.Erros = erros;
+                    Task.Run(() => ValidateId(erros, client.Id)),
+                    Task.Run(() => ValidateIdClient(erros, client.IdUsuario)),
+                    Task.Run(() => ValidateName(erros, client.Nombre)),
+                    Task.Run(() => ValidateAge(erros, client.Edad)),
+                    Task.Run(() => ValidateIdentificationType(erros, client.IdTipoIdentificacion)),
+                    Task.Run(() => ValidateIdentification(erros, client.NumeroIdentificacion))
+                ];
+
+                // Esperar a que todas las tareas se completen
+                await Task.WhenAll(tasks);
+
+                validation.Erros = erros.ToDictionary();
 
                 if (validation.Erros.Count == 0)
                 {
@@ -126,47 +143,50 @@ namespace CRUD.Validations
         }
 
         // Validaciones
-        private Dictionary<string, List<string>> ValidateId(Dictionary<string, List<string>> erros, int idClient)
+        private static void ValidateId(ConcurrentDictionary<string, List<string>> erros, int id)
+        {
+            if (id == 0)
+            {
+                erros.TryAdd("id", ["La clave id es requerida, su valor no puede ser 0"]);
+            }
+        }
+        private static void ValidateIdClient(ConcurrentDictionary<string, List<string>> erros, int idClient)
         {
             if (idClient == 0)
             {
-                erros.Add("id", ["La clave id es requerida, su valor no puede ser 0"]);
+                erros.TryAdd("id", ["La clave id es requerida, su valor no puede ser 0"]);
             }
-
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidateName(Dictionary<string, List<string>> erros, string name)
+        private static void ValidateName(ConcurrentDictionary<string, List<string>> erros, string name)
         {
             // Any(char.IsDigit) valida que el nombre no tenga numeros
             if (string.IsNullOrEmpty(name))
             {
-                erros.Add("nombre", ["No puede estar vacio"]);
+                erros.TryAdd("nombre", ["No puede estar vacio"]);
             }
             else if (name.Any(char.IsDigit))
             {
-                erros.Add("nombre", ["No se aceptan numeros."]);
+                erros.TryAdd("nombre", ["No se aceptan numeros."]);
             }
             else if (name.Length > 100)
             {
-                erros.Add("nombre", ["Numero Maximo de caracteres aceptados 100."]);
+                erros.TryAdd("nombre", ["Numero Maximo de caracteres aceptados 100."]);
             }
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidateAge(Dictionary<string, List<string>> erros, byte age)
+        private static void ValidateAge(ConcurrentDictionary<string, List<string>> erros, byte age)
         {
 
             if (age == 0)
             {
-                erros.Add("edad", ["La clave edad es requerida, su valor no puede ser 0"]);
+                erros.TryAdd("edad", ["La clave edad es requerida, su valor no puede ser 0"]);
             }
             else if (age < 18)
             {
-                erros.Add("edad", ["El cliente debe ser mayor de 18"]);
+                erros.TryAdd("edad", ["El cliente debe ser mayor de 18"]);
             }
 
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidateIdentificationType(Dictionary<string, List<string>> erros, int IdTipoIdentificacion)
+        private void ValidateIdentificationType(ConcurrentDictionary<string, List<string>> erros, int IdTipoIdentificacion)
         {
             // Valida si el tipo de identificación es valido
             bool isOk = _identificationTypeStruct.IdentificationTypes.ContainsKey(IdTipoIdentificacion);
@@ -174,27 +194,24 @@ namespace CRUD.Validations
             if (!isOk)
             {
                 // Agrega la entrada al diccionario de errores
-                erros.Add("idTipoIdentificacion",
+                erros.TryAdd("idTipoIdentificacion",
                     // El Select, recorre la lista y muestra todos los posibles valores
                     _identificationTypeStruct.IdentificationTypes
                     .Select(kv => $"Posible valor : {kv.Key}; Significado : {kv.Value}")
                     .ToList());
             }
 
-            return erros;
         }
-        private Dictionary<string, List<string>> ValidateIdentification(Dictionary<string, List<string>> erros, string identification)
+        private static void ValidateIdentification(ConcurrentDictionary<string, List<string>> erros, string identification)
         {
             if (string.IsNullOrEmpty(identification))
             {
-                erros.Add("numeroIdentificacion", ["El numero de identifiacion es requerido."]);
+                erros.TryAdd("numeroIdentificacion", ["El numero de identifiacion es requerido."]);
             }
             else if (identification.Length > 20)
             {
-                erros.Add("numeroIdentificacion", ["Numero Maximo de caracteres aceptados 20."]);
+                erros.TryAdd("numeroIdentificacion", ["Numero Maximo de caracteres aceptados 20."]);
             }
-
-            return erros;
 
         }
     }

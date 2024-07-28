@@ -25,14 +25,14 @@ namespace CRUD.Controllers
             _authService = authService;
         }
 
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        [HttpPost("LoginAsync")]
+        public async Task<IActionResult> LoginAsync([FromBody] LoginModel login)
         {
             ResponseModel response = new();
 
             try
             {
-                ValidationModel validation = _authValidation.Login(login);
+                ValidationModel validation = await _authValidation.LoginAsync(login);
 
                 if (validation.Success)
                 {

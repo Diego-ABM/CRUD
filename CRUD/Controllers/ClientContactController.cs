@@ -25,14 +25,14 @@ namespace CRUD.Controllers
         // Crea un cliente
 
         [Authorize]
-        [HttpPost("Create")]
-        public IActionResult Create([FromBody] ClientContactModel contact)
+        [HttpPost("CreateAsync")]
+        public async Task<IActionResult> CreateAsync([FromBody] ClientContactModel contact)
         {
             ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _contactValidation.Create(contact);
+                ValidationModel validation = await _contactValidation.CreateAsync(contact);
                 if (validation.Success)
                 {
                     response = _contactService.Create(contact);
@@ -68,17 +68,17 @@ namespace CRUD.Controllers
 
         }
 
-        // Consulta un cliente por su numero de identificación
+        // Consulta un por el id
         [Authorize]
-        [HttpGet("Read/{idClient}")]
-        public IActionResult Read(int idClient)
+        [HttpGet("ReadAsync/{idClient}")]
+        public async Task<IActionResult> ReadAsync(int idClient)
         {
             ResponseModel response = new();
 
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _contactValidation.ReadOrDelete(idClient);
+                ValidationModel validation = await _contactValidation.ReadOrDeleteAsync(idClient);
 
                 // Cumple con el formato requerido
                 if (validation.Success)
@@ -123,14 +123,14 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpPut("Update")]
-        public IActionResult Update([FromBody] ClientContactModel contact)
+        [HttpPut("UpdateAsync")]
+        public async Task<IActionResult> UpdateAsync([FromBody] ClientContactModel contact)
         {
             ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _contactValidation.Update(contact);
+                ValidationModel validation = await _contactValidation.UpdateAsync(contact);
                 if (validation.Success)
                 {
                     response = _contactService.Update(contact);
@@ -166,8 +166,8 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [Authorize]
-        [HttpDelete("Delete/{idClient}")]
-        public IActionResult Delete(int idClient)
+        [HttpDelete("DeleteAsync/{idClient}")]
+        public async Task<IActionResult> DeleteAsync(int idClient)
         {
 
             ResponseModel response = new();
@@ -175,7 +175,7 @@ namespace CRUD.Controllers
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _contactValidation.ReadOrDelete(idClient);
+                ValidationModel validation = await _contactValidation.ReadOrDeleteAsync(idClient);
 
                 // Cumple con el formato requerido
                 if (validation.Success)

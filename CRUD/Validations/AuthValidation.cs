@@ -1,4 +1,6 @@
 ﻿using CRUD.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
@@ -9,19 +11,29 @@ namespace CRUD.Validations
         private readonly InternalCode _internalCodes = new();
 
         // Funciones
-        public ValidationModel Login(LoginModel login)
+        public async Task<ValidationModel> LoginAsync(LoginModel login)
         {
+            // Inicio mi modelo de validación
             ValidationModel validation = new();
-            Dictionary<string, List<string>> erros = [];
+            // Utilizo un diccionary concurrente, para no manejar el bloqueo de hilos manualmente
+            ConcurrentDictionary<string, List<string>> erros = [];
 
             try
             {
-                ValidateEmail(erros, login.CorreoElectronico);
-                ValidatePassword(erros, login.Contrasenia);
+                // Crea lista de tareas
+                List<Task> tasks = [
+                    // Ejecutamos en otros hilos para agilizar las validaciónes
+                    Task.Run(() => ValidateEmail(erros, login.CorreoElectronico)),
+                    Task.Run(() => ValidatePassword(erros, login.Contrasenia))
+                    ];
 
-                validation.Erros = erros;
 
-                if (validation.Erros.Count == 0)
+                // Espera a que las tareas terminen
+                await Task.WhenAll(tasks);
+
+                validation.Erros = erros.ToDictionary();
+
+                if (validation.Erros.IsNullOrEmpty())
                 {
                     validation.Code = _internalCodes.Exitoso;
                     validation.Success = true;
@@ -46,47 +58,44 @@ namespace CRUD.Validations
             return validation;
         }
 
-
         // Validaciones
-        private Dictionary<string, List<string>> ValidateEmail(Dictionary<string, List<string>> erros, string email)
+        private static void ValidateEmail(ConcurrentDictionary<string, List<string>> erros, string email)
         {
             // Expresión regular para validar que el strign sea un correo electrónico
             string pattern = @"^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$";
 
             if (string.IsNullOrEmpty(email))
             {
-                erros.Add("correoElectronico", ["Correo electronico es requerido."]);
+                erros.TryAdd("correoElectronico", ["Correo electronico es requerido."]);
             }
             else if (!Regex.IsMatch(email, pattern))
             {
-                erros.Add("correoElectronico", ["El formato no es valido."]);
+                erros.TryAdd("correoElectronico", ["El formato no es valido."]);
             }
             else if (email.Length > 20)
             {
-                erros.Add("correoElectronico", ["Numero Maximo de caracteres aceptados 100."]);
+                erros.TryAdd("correoElectronico", ["Numero Maximo de caracteres aceptados 100."]);
             }
 
-            return erros;
-
         }
-        private Dictionary<string, List<string>> ValidatePassword(Dictionary<string, List<string>> erros, string password)
+        private static void ValidatePassword(ConcurrentDictionary<string, List<string>> erros, string password)
         {
             // Expresion regular para contraseñas generales segun ISO/IEC 27002:2013
             string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&. ])[\w\d@$!%*?&. ]{8,}$";
 
             if (string.IsNullOrEmpty(password))
             {
-                erros.Add("contrasenia", ["Campo requerido."]);
+                erros.TryAdd("contrasenia", ["Campo requerido."]);
             }
             else if (!Regex.IsMatch(password, pattern))
             {
-                erros.Add("contrasenia", ["La contraseña debe tener como mínimo 8 caracteres, incluyendo al menos una letra mayúscula, una letra minúscula, un número y un carácter especial."]);
+                erros.TryAdd("contrasenia", ["La contraseña debe tener como mínimo 8 caracteres, incluyendo al menos una letra mayúscula, una letra minúscula, un número y un carácter especial."]);
             }
             else if (password.Length > 100)
             {
-                erros.Add("nombre", ["Numero Maximo de caracteres aceptados 100."]);
+                erros.TryAdd("nombre", ["Numero Maximo de caracteres aceptados 100."]);
             }
-            return erros;
+
         }
     }
 }
