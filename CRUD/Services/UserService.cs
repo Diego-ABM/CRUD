@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRUD.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         // Variables
         private readonly CrudContext _crudContext;

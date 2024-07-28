@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRUD.Services
 {
-    public class ClientEmailService
+    public class ClientEmailService : IClientEmailService
     {
         // Variables
         private readonly CrudContext _crudContext;

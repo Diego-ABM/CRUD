@@ -1,11 +1,12 @@
 ﻿using CRUD.Assests;
 using CRUD.Models;
 using CRUD.Models.bdCrud;
+using CRUD.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRUD.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         // Variables
         private readonly CrudContext _crudContext;

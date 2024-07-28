@@ -50,11 +50,11 @@ namespace CRUD
             services.AddSwaggerGen();
 
             services.AddScoped<IClientService, ClientService>();
-            services.AddScoped<UserService>();
-            services.AddScoped<AuthService>();
-            services.AddScoped<ClientContactService>();
-            services.AddScoped<ClientAddressService>();
-            services.AddScoped<ClientEmailService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IClientContactService, ClientContactService>();
+            services.AddScoped<IClientAddressService, ClientAddressService>();
+            services.AddScoped<IClientEmailService, ClientEmailService>();
 
 
             services.AddScoped<ClientValidation>();

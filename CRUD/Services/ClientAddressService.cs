@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRUD.Services
 {
-    public class ClientAddressService
+    public class ClientAddressService : IClientAddressService
     {
         // Variables
         private readonly CrudContext _crudContext;

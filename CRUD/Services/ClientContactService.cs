@@ -1,11 +1,12 @@
 ﻿using CRUD.Models;
 using CRUD.Models.bdCrud;
 using CRUD.Models.CrudBD;
+using CRUD.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRUD.Services
 {
-    public class ClientContactService
+    public class ClientContactService : IClientContactService
     {
         // Variables
         private readonly CrudContext _crudContext;
