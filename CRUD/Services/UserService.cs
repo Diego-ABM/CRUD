@@ -21,7 +21,7 @@ namespace CRUD.Services
 
         // Funciones
         // Registra el usuario
-        public ResponseModel Create(UserModel user)
+        public async Task<ResponseModel> CreateAsync(UserModel user)
         {
             ResponseModel response = new();
             try
@@ -36,7 +36,7 @@ namespace CRUD.Services
                     user.Contrasenia = Cifrate.PasswordToSha256(user.Contrasenia);
 
                     _crudContext.Usuario.Add(user);
-                    result = _crudContext.SaveChanges();
+                    result = await _crudContext.SaveChangesAsync();
 
                     // Si se guarda correctamente
                     if (result > 0)
@@ -75,15 +75,14 @@ namespace CRUD.Services
             return response;
 
         }
-        // Consulta el usuario por correo
-        public ResponseModel Read(string email)
+        public async Task<ResponseModel> ReadAsync(string email)
         {
             ResponseModel response = new();
             UserModel? usuario = null;
 
             try
             {
-                usuario = _crudContext.Usuario.Where(data => data.CorreoElectronico == email).FirstOrDefault();
+                usuario = await _crudContext.Usuario.Where(data => data.CorreoElectronico == email).FirstOrDefaultAsync();
 
                 if (usuario != null)
                 {
@@ -108,13 +107,13 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Update(UserModel user)
+        public async Task<ResponseModel> UpdateAsync(UserModel user)
         {
             ResponseModel response = new();
             try
             {
                 // Validamos si el correo no se ecuentra registrado, ya que es tipo UNIQUE
-                int result = _crudContext.Usuario.Where(x => x.CorreoElectronico == user.CorreoElectronico).Select(x => x.Id).FirstOrDefault();
+                int result = await _crudContext.Usuario.Where(x => x.CorreoElectronico == user.CorreoElectronico).Select(x => x.Id).FirstOrDefaultAsync();
 
                 // Si el usuario no existe
                 if (result == 0)
@@ -123,7 +122,7 @@ namespace CRUD.Services
                     user.Contrasenia = Cifrate.PasswordToSha256(user.Contrasenia);
 
                     _crudContext.Usuario.Update(user);
-                    result = _crudContext.SaveChanges();
+                    result = await _crudContext.SaveChangesAsync();
 
                     // Si se guarda correctamente
                     if (result > 0)
@@ -163,12 +162,12 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Delete(string email)
+        public async Task<ResponseModel> DeleteAsync(string email)
         {
             ResponseModel response = new();
             try
             {
-                UserModel? usuer = _crudContext.Usuario.Where(c => c.CorreoElectronico == email).FirstOrDefault();
+                UserModel? usuer = await _crudContext.Usuario.Where(c => c.CorreoElectronico == email).FirstOrDefaultAsync();
 
                 // Si no encuentra el usuario
                 if (usuer == null)
@@ -181,7 +180,7 @@ namespace CRUD.Services
                 else
                 {
                     _crudContext.Usuario.Remove(usuer);
-                    int result = _crudContext.SaveChanges();
+                    int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente
                     if (result > 0)
@@ -211,8 +210,5 @@ namespace CRUD.Services
 
             return response;
         }
-
-
-
     }
 }

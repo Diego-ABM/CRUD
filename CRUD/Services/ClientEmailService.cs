@@ -18,13 +18,13 @@ namespace CRUD.Services
         }
 
         // Funciones
-        public ResponseModel Create(ClientEmailModel email)
+        public async Task<ResponseModel> CreateAsync(ClientEmailModel email)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.ClienteCorreoElectronico.Add(email);
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result != 0)
@@ -56,7 +56,7 @@ namespace CRUD.Services
             return response;
 
         }
-        public ResponseModel Read(int idClient, string email = "")
+        public async Task<ResponseModel> ReadAsync(int idClient, string email = "")
         {
             ResponseModel response = new();
             List<ClientEmailModel> contactEmail;
@@ -67,12 +67,12 @@ namespace CRUD.Services
                 if (string.IsNullOrEmpty(email))
                 {
                     // Busca solo por ID y regresa los correos relacionados a ese ID
-                    contactEmail = _crudContext.ClienteCorreoElectronico.Where(cc => cc.IdCliente == idClient).ToList();
+                    contactEmail = await _crudContext.ClienteCorreoElectronico.Where(cc => cc.IdCliente == idClient).ToListAsync();
                 }
                 else
                 {
                     // Busca por ID y correo
-                    contactEmail = _crudContext.ClienteCorreoElectronico.Where(cc => cc.IdCliente == idClient && cc.CorreoElectronico == email).ToList();
+                    contactEmail = await _crudContext.ClienteCorreoElectronico.Where(cc => cc.IdCliente == idClient && cc.CorreoElectronico == email).ToListAsync();
                 }
 
                 if (contactEmail.Count != 0)
@@ -100,14 +100,14 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Update(ClientEmailModel email)
+        public async Task<ResponseModel> UpdateAsync(ClientEmailModel email)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.ClienteCorreoElectronico.Update(email);
 
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result > 0)
@@ -138,7 +138,7 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Delete(int id)
+        public async Task<ResponseModel> DeleteAsync(int id)
         {
             ResponseModel response = new();
             try
@@ -151,7 +151,7 @@ namespace CRUD.Services
                 if (clientEmail != null)
                 {
                     _crudContext.ClienteCorreoElectronico.Remove(clientEmail);
-                    int result = _crudContext.SaveChanges();
+                    int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente
                     if (result > 0)

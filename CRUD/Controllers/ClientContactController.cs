@@ -35,7 +35,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _contactValidation.CreateAsync(contact);
                 if (validation.Success)
                 {
-                    response = _contactService.Create(contact);
+                    response = await _contactService.CreateAsync(contact);
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
@@ -84,7 +84,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Conuslta el numero de identificación en BD
-                    response = _contactService.Read(idClient);
+                    response = await _contactService.ReadAsync(idClient);
 
                     //Si encontro un cliente
                     if (response.Success)
@@ -133,7 +133,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _contactValidation.UpdateAsync(contact);
                 if (validation.Success)
                 {
-                    response = _contactService.Update(contact);
+                    response = await _contactService.UpdateAsync(contact);
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
@@ -181,7 +181,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Elimina el cliente y todo lo realcionado a el en BD
-                    response = _contactService.Delete(idClient);
+                    response = await _contactService.DeleteAsync(idClient);
 
                     //Si el resultado es exitoso
                     if (response.Success)

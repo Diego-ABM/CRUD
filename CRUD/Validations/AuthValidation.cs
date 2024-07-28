@@ -43,7 +43,7 @@ namespace CRUD.Validations
                 {
                     validation.Code = _internalCodes.Exitoso;
                     validation.Success = false;
-                    validation.Message = "Request Login contiene errores";
+                    validation.Message = "Request LoginAsync contiene errores";
                 }
 
             }

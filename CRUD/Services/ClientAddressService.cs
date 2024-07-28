@@ -18,13 +18,13 @@ namespace CRUD.Services
         }
 
         // Funciones
-        public ResponseModel Create(ClientAddressModel address)
+        public async Task<ResponseModel> CreateAsync(ClientAddressModel address)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.ClienteDireccion.Add(address);
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result != 0)
@@ -56,14 +56,14 @@ namespace CRUD.Services
             return response;
 
         }
-        public ResponseModel Read(int idClient)
+        public async Task<ResponseModel> ReadAsync(int idClient)
         {
             ResponseModel response = new();
             List<ClientAddressModel> clientAddress;
 
             try
             {
-                clientAddress = _crudContext.ClienteDireccion.Where(cc => cc.IdCliente == idClient).ToList();
+                clientAddress = await _crudContext.ClienteDireccion.Where(cc => cc.IdCliente == idClient).ToListAsync();
 
                 if (clientAddress.Count != 0)
                 {
@@ -90,14 +90,14 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Update(ClientAddressModel clientAddress)
+        public async Task<ResponseModel> UpdateAsync(ClientAddressModel clientAddress)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.ClienteDireccion.Update(clientAddress);
 
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result > 0)
@@ -128,19 +128,19 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Delete(int id)
+        public async Task<ResponseModel> DeleteAsync(int id)
         {
             ResponseModel response = new();
             try
             {
                 // Antes de eliminar validamos si existe en BD
-                ClientAddressModel? clientEmail = _crudContext.ClienteDireccion.Where(cc => cc.Id == id).FirstOrDefault();
+                ClientAddressModel? clientEmail = await _crudContext.ClienteDireccion.Where(cc => cc.Id == id).FirstOrDefaultAsync();
 
                 // Encontrado
                 if (clientEmail != null)
                 {
                     _crudContext.ClienteDireccion.Remove(clientEmail);
-                    int result = _crudContext.SaveChanges();
+                    int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente
                     if (result > 0)

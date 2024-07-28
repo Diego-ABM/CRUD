@@ -34,7 +34,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _clientValidation.CreateAsync(client);
                 if (validation.Success)
                 {
-                    ResponseModel InsertResult = _clientService.Create(client);
+                    ResponseModel InsertResult = await _clientService.CreateAsync(client);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -87,7 +87,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Conuslta el numero de identificación en BD
-                    response = _clientService.Read(identificationNumber);
+                    response = await _clientService.ReadAsync(identificationNumber);
 
                     //Si encontro un cliente
                     if (response.Success)
@@ -139,7 +139,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _clientValidation.UpdateAsync(client);
                 if (validation.Success)
                 {
-                    ResponseModel InsertResult = _clientService.Update(client);
+                    ResponseModel InsertResult = await _clientService.UpdateAsync(client);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -193,7 +193,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Elimina el cliente y todo lo realcionado a el en BD
-                    ResponseModel result = _clientService.Delete(identificationNumber);
+                    ResponseModel result = await _clientService.DeleteAsync(identificationNumber);
 
                     //Si el resultado es exitoso
                     if (result.Success)

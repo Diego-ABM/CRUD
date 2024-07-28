@@ -18,13 +18,13 @@ namespace CRUD.Services
         }
 
         // Funciones
-        public ResponseModel Create(ClientModel cliente)
+        public async Task<ResponseModel> CreateAsync(ClientModel cliente)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.Cliente.Add(cliente);
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result > 0)
@@ -56,14 +56,14 @@ namespace CRUD.Services
             return response;
 
         }
-        public ResponseModel Read(string numberIdentification)
+        public async Task<ResponseModel> ReadAsync(string numberIdentification)
         {
             ResponseModel response = new();
             ClientModel? cliente = null;
 
             try
             {
-                cliente = _crudContext.Cliente.Where(data => data.NumeroIdentificacion == numberIdentification).FirstOrDefault();
+                cliente = await _crudContext.Cliente.Where(data => data.NumeroIdentificacion == numberIdentification).FirstOrDefaultAsync();
 
                 if (cliente != null)
                 {
@@ -90,13 +90,13 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Update(ClientModel cliente)
+        public async Task<ResponseModel> UpdateAsync(ClientModel cliente)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.Cliente.Update(cliente);
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result > 0)
@@ -127,7 +127,7 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Delete(string numberIdentification)
+        public async Task<ResponseModel> DeleteAsync(string numberIdentification)
         {
             ResponseModel response = new();
             try
@@ -146,7 +146,7 @@ namespace CRUD.Services
                 {
 
                     _crudContext.Cliente.Remove(client);
-                    int result = _crudContext.SaveChanges();
+                    int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente
                     if (result > 0)

@@ -36,7 +36,7 @@ namespace CRUD.Controllers
 
                 if (validation.Success)
                 {
-                    response = _authService.Login(login);
+                    response = await _authService.LoginAsync(login);
 
                     if (response.Success)
                     {

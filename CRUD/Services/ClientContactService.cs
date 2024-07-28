@@ -18,13 +18,13 @@ namespace CRUD.Services
         }
 
         // Funciones
-        public ResponseModel Create(ClientContactModel contact)
+        public async Task<ResponseModel> CreateAsync(ClientContactModel contact)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.ClienteContacto.Add(contact);
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result > 0)
@@ -56,14 +56,14 @@ namespace CRUD.Services
             return response;
 
         }
-        public ResponseModel Read(int idClient)
+        public async Task<ResponseModel> ReadAsync(int idClient)
         {
             ResponseModel response = new();
             List<ClientContactModel> contact;
 
             try
             {
-                contact = _crudContext.ClienteContacto.Where(cc => cc.IdCliente == idClient).ToList();
+                contact = await _crudContext.ClienteContacto.Where(cc => cc.IdCliente == idClient).ToListAsync();
 
                 if (contact.Count != 0)
                 {
@@ -90,14 +90,14 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Update(ClientContactModel contact)
+        public async Task<ResponseModel> UpdateAsync(ClientContactModel contact)
         {
             ResponseModel response = new();
             try
             {
                 _crudContext.ClienteContacto.Update(contact);
 
-                int result = _crudContext.SaveChanges();
+                int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
                 if (result > 0)
@@ -128,7 +128,7 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseModel Delete(int idClient)
+        public async Task<ResponseModel> DeleteAsync(int idClient)
         {
             ResponseModel response = new();
             try
@@ -140,7 +140,7 @@ namespace CRUD.Services
                 if (contact != null)
                 {
                     _crudContext.ClienteContacto.Remove(contact);
-                    int result = _crudContext.SaveChanges();
+                    int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente
                     if (result > 0)

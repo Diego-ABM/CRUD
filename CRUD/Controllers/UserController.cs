@@ -35,7 +35,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _userValidation.CreateAsync(user);
                 if (validation.Success)
                 {
-                    ResponseModel InsertResult = _userService.Create(user);
+                    ResponseModel InsertResult = await _userService.CreateAsync(user);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -88,7 +88,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Conuslta el numero de identificación en BD
-                    ResponseModel result = _userService.Read(email);
+                    ResponseModel result = await _userService.ReadAsync(email);
 
                     //Si encontro un cliente
                     if (result.Success)
@@ -145,7 +145,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _userValidation.UpdateAsync(user);
                 if (validation.Success)
                 {
-                    ResponseModel InsertResult = _userService.Update(user);
+                    ResponseModel InsertResult = await _userService.UpdateAsync(user);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -199,7 +199,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Elimina el cliente y todo lo realcionado a el en BD
-                    ResponseModel result = _userService.Delete(email);
+                    ResponseModel result = await _userService.DeleteAsync(email);
 
                     //Si el resultado es exitoso
                     if (result.Success)

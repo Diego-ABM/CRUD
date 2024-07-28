@@ -34,7 +34,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _clientEmailValidation.CreateAsync(email);
                 if (validation.Success)
                 {
-                    response = _clientEmailService.Create(email);
+                    response = await _clientEmailService.CreateAsync(email);
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
@@ -88,9 +88,9 @@ namespace CRUD.Controllers
                 {
                     // Valida el parametro ocpional
                     if (string.IsNullOrEmpty(email))
-                        response = _clientEmailService.Read(idClient);
+                        response = await _clientEmailService.ReadAsync(idClient);
                     else
-                        response = _clientEmailService.Read(idClient, email);
+                        response = await _clientEmailService.ReadAsync(idClient, email);
 
                     //Si encontro un cliente
                     if (response.Success)
@@ -139,7 +139,7 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _clientEmailValidation.UpdateAsync(email);
                 if (validation.Success)
                 {
-                    response = _clientEmailService.Update(email);
+                    response = await _clientEmailService.UpdateAsync(email);
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
@@ -187,7 +187,7 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Elimina el cliente y todo lo realcionado a el en BD
-                    response = _clientEmailService.Delete(idClient);
+                    response = await _clientEmailService.DeleteAsync(idClient);
 
                     //Si el resultado es exitoso
                     if (response.Success)

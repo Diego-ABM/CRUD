@@ -1,6 +1,7 @@
 ﻿using CRUD.Assests;
 using CRUD.Models;
 using CRUD.Models.bdCrud;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRUD.Services
 {
@@ -17,7 +18,7 @@ namespace CRUD.Services
         }
 
         // Funciones
-        public ResponseModel Login(LoginModel login)
+        public async Task<ResponseModel> LoginAsync(LoginModel login)
         {
             ResponseModel result = new();
 
@@ -25,7 +26,7 @@ namespace CRUD.Services
             {
                 login.Contrasenia = Cifrate.PasswordToSha256(login.Contrasenia);
 
-                bool loginSuccess = _crudContext.Usuario.Any((u) => u.CorreoElectronico == login.CorreoElectronico && u.Contrasenia == login.Contrasenia);
+                bool loginSuccess = await _crudContext.Usuario.AnyAsync((u) => u.CorreoElectronico == login.CorreoElectronico && u.Contrasenia == login.Contrasenia);
 
                 if (loginSuccess)
                 {
@@ -44,7 +45,7 @@ namespace CRUD.Services
             {
                 result.Success = false;
                 result.Code = _internalCode.Error;
-                result.Message = $"Ocurrio una excepcion en el servicio Login {ex.Message}.";
+                result.Message = $"Ocurrio una excepcion en el servicio LoginAsync {ex.Message}.";
             }
 
             return result;
