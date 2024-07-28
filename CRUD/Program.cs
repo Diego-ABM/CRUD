@@ -42,9 +42,11 @@ namespace CRUD
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            services.AddScoped<ClientService>();
             services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<UserService>();
+
             services.AddScoped<ClientValidation>();
+            services.AddScoped<UserValidation>();
         }
 
         static void AddDbContext(IServiceCollection services, string connectionString)

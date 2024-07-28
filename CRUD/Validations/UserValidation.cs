@@ -1,28 +1,31 @@
 ﻿using CRUD.Models;
-using CRUD.Models.bdCrud;
+using CRUD.Models.CrudBD;
 using CRUD.Models.CrudBD.Structs;
+using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
 {
-    public class ClientValidation
+    public class UserValidation
     {
         // Variables
         private readonly IdentificationTypeStruct _identificationTypeStruct = new();
         private readonly InternalCode _internalCodes = new();
 
         // Funciones
-        public ValidationModel Create(ClientModel client)
+        public ValidationModel Create(UserModel user)
         {
             ValidationModel validation = new();
             Dictionary<string, List<string>> erros = [];
 
             try
             {
-
-                ValidateName(erros, client.Nombre);
-                ValidateAge(erros, client.Edad);
-                ValidateIdentificationType(erros, client.IdTipoIdentificacion);
-                ValidateIdentification(erros, client.NumeroIdentificacion);
+                ValidateName(erros, user.Nombre);
+                ValidateUserName(erros, user.Usuario);
+                ValidatePassword(erros, user.Contrasenia);
+                ValidateEmail(erros, user.CorreoElectronico);
+                ValidateAge(erros, user.Edad);
+                ValidateIdentificationType(erros, user.IdTipoIdentificacion);
+                ValidateIdentification(erros, user.NumeroIdentificacion);
 
                 validation.Erros = erros;
 
@@ -50,7 +53,7 @@ namespace CRUD.Validations
             // Valida si el tipo de documento ingresado es el esperado
             return validation;
         }
-        public ValidationModel ReadOrDelete(string identificationNumber)
+        public ValidationModel ReadOrDelete(string email)
         {
 
             ValidationModel validation = new();
@@ -58,7 +61,7 @@ namespace CRUD.Validations
 
             try
             {
-                ValidateIdentification(erros, identificationNumber);
+                ValidateEmail(erros, email);
 
                 validation.Erros = erros;
 
@@ -70,9 +73,9 @@ namespace CRUD.Validations
                 }
                 else
                 {
-                    validation.Code = _internalCodes.Exitoso;
+                    validation.Code = _internalCodes.Fallo;
                     validation.Success = false;
-                    validation.Message = "Request cliente contiene errores";
+                    validation.Message = "Request usuario contiene errores";
                 }
 
             }
@@ -84,18 +87,21 @@ namespace CRUD.Validations
             }
             return validation;
         }
-        public ValidationModel Update(ClientModel client)
+        public ValidationModel Update(UserModel user)
         {
             ValidationModel validation = new();
             Dictionary<string, List<string>> erros = [];
 
             try
             {
-                ValidateId(erros, client.Id);
-                ValidateName(erros, client.Nombre);
-                ValidateAge(erros, client.Edad);
-                ValidateIdentificationType(erros, client.IdTipoIdentificacion);
-                ValidateIdentification(erros, client.NumeroIdentificacion);
+                ValidateId(erros, user.Id);
+                ValidateName(erros, user.Nombre);
+                ValidateUserName(erros, user.Usuario);
+                ValidatePassword(erros, user.Contrasenia);
+                ValidateEmail(erros, user.CorreoElectronico);
+                ValidateAge(erros, user.Edad);
+                ValidateIdentificationType(erros, user.IdTipoIdentificacion);
+                ValidateIdentification(erros, user.NumeroIdentificacion);
 
                 validation.Erros = erros;
 
@@ -139,15 +145,53 @@ namespace CRUD.Validations
             // Any(char.IsDigit) valida que el nombre no tenga numeros
             if (string.IsNullOrEmpty(name))
             {
-                erros.Add("nombre", ["No puede estar vacio"]);
+                erros.Add("nombre", ["Campo requerido."]);
             }
             else if (name.Any(char.IsDigit))
             {
-                erros.Add("nombre", ["No se aceptan numeros."]);
+                erros.Add("nombre", ["No debe contener numeros."]);
             }
             else if (name.Length > 100)
             {
                 erros.Add("nombre", ["Numero Maximo de caracteres aceptados 100."]);
+            }
+            return erros;
+        }
+        private Dictionary<string, List<string>> ValidatePassword(Dictionary<string, List<string>> erros, string password)
+        {
+            // Expresion regular para contraseñas generales segun ISO/IEC 27002:2013
+            string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&. ])[\w\d@$!%*?&. ]{8,}$";
+
+            if (string.IsNullOrEmpty(password))
+            {
+                erros.Add("contrasenia", ["Campo requerido."]);
+            }
+            else if (!Regex.IsMatch(password, pattern))
+            {
+                erros.Add("contrasenia", ["La contraseña debe tener como mínimo 8 caracteres, incluyendo al menos una letra mayúscula, una letra minúscula, un número y un carácter especial."]);
+            }
+            else if (password.Length > 100)
+            {
+                erros.Add("nombre", ["Numero Maximo de caracteres aceptados 100."]);
+            }
+            return erros;
+        }
+        private Dictionary<string, List<string>> ValidateUserName(Dictionary<string, List<string>> erros, string userName)
+        {
+            // Expresion regular para validar que no tenga espacios en blanco
+            string pattern = @"^\S+$";
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                erros.Add("usuario", ["El valor no puede estar vacio."]);
+            }
+            else if (!Regex.IsMatch(userName, pattern))
+            {
+                erros.Add("usuario", ["No puede contener espacios en blanco."]);
+            }
+            else if (userName.Length > 100)
+            {
+                erros.Add("usario", ["Numero Maximo de caracteres aceptados 100."]);
             }
             return erros;
         }
@@ -167,12 +211,12 @@ namespace CRUD.Validations
         }
         private Dictionary<string, List<string>> ValidateIdentificationType(Dictionary<string, List<string>> erros, int IdTipoIdentificacion)
         {
-            // Valida si el tipo de identificación es valido
+            // Valida si el tipo de identificaion es el esperado
             bool isOk = _identificationTypeStruct.IdentificationType.ContainsKey(IdTipoIdentificacion);
 
             if (!isOk)
             {
-                // Agrega la entrada al diccionario de errores
+                // Agrega la entrada al diccionario
                 erros.Add("idTipoIdentificacion",
                     // El Select, recorre la lista y muestra todos los posibles valores
                     _identificationTypeStruct.IdentificationType
@@ -191,6 +235,27 @@ namespace CRUD.Validations
             else if (identification.Length > 20)
             {
                 erros.Add("numeroIdentificacion", ["Numero Maximo de caracteres aceptados 20."]);
+            }
+
+            return erros;
+
+        }
+        private Dictionary<string, List<string>> ValidateEmail(Dictionary<string, List<string>> erros, string email)
+        {
+            // Expresión regular para validar que el strign sea un correo electrónico
+            string pattern = @"^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$";
+
+            if (string.IsNullOrEmpty(email))
+            {
+                erros.Add("correoElectronico", ["Correo electronico es requerido."]);
+            }
+            else if (!Regex.IsMatch(email, pattern))
+            {
+                erros.Add("correoElectronico", ["El formato no es valido."]);
+            }
+            else if (email.Length > 20)
+            {
+                erros.Add("correoElectronico", ["Numero Maximo de caracteres aceptados 100."]);
             }
 
             return erros;

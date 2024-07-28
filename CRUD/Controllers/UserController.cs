@@ -1,6 +1,6 @@
 ﻿using CRUD.Models;
-using CRUD.Models.bdCrud;
-using CRUD.Services.Interfaces;
+using CRUD.Models.CrudBD;
+using CRUD.Services;
 using CRUD.Validations;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -9,30 +9,30 @@ namespace CRUD.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ClientController : ControllerBase
+    public class UserController : ControllerBase
     {
         // Inyecciones
-        private readonly IClientService _clientService;
-        private readonly ClientValidation _clientValidation;
+        private readonly UserService _userService;
+        private readonly UserValidation _userValidation;
 
-        public ClientController(IClientService clientService, ClientValidation clientValidation)
+        public UserController(UserService clientService, UserValidation userValidation)
         {
-            _clientService = clientService;
-            _clientValidation = clientValidation;
+            _userService = clientService;
+            _userValidation = userValidation;
         }
 
         // Crea un cliente
         [HttpPost("Create")]
-        public IActionResult Create([FromBody] ClientModel client)
+        public IActionResult Create([FromBody] UserModel user)
         {
             ResponseControllerModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientValidation.Create(client);
+                ValidationModel validation = _userValidation.Create(user);
                 if (validation.Success)
                 {
-                    ResponseControllerModel InsertResult = _clientService.Create(client);
+                    ResponseControllerModel InsertResult = _userService.Create(user);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -43,11 +43,11 @@ namespace CRUD.Controllers
                     }
                     else
                     {
-                        responseService.Code = (int)HttpStatusCode.InternalServerError;
+                        responseService.Code = (int)HttpStatusCode.Conflict;
                         responseService.Message = InsertResult.Message;
                         responseService.Success = false;
 
-                        return BadRequest(responseService);
+                        return Conflict(responseService);
                     }
                 }
                 else
@@ -70,21 +70,21 @@ namespace CRUD.Controllers
         }
 
         // Consulta un cliente por su numero de identificación
-        [HttpGet("Read/{identificationNumber}")]
-        public IActionResult Read(string identificationNumber)
+        [HttpGet("Read/{email}")]
+        public IActionResult Read(string email)
         {
             ResponseControllerModel responseModel = new();
 
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _clientValidation.ReadOrDelete(identificationNumber);
+                ValidationModel validation = _userValidation.ReadOrDelete(email);
 
                 // Cumple con el formato requerido
                 if (validation.Success)
                 {
                     // Conuslta el numero de identificación en BD
-                    ResponseControllerModel result = _clientService.Read(identificationNumber);
+                    ResponseControllerModel result = _userService.Read(email);
 
                     //Si encontro un cliente
                     if (result.Success)
@@ -112,6 +112,7 @@ namespace CRUD.Controllers
                 else
                 {
                     // Seteamos los datos para que el servicio responda 
+                    responseModel.Code = (int)HttpStatusCode.BadRequest;
                     responseModel.Success = false;
                     responseModel.Message = validation.Message;
                     responseModel.RequestErros = validation.Erros;
@@ -130,16 +131,16 @@ namespace CRUD.Controllers
 
         // Crea un cliente
         [HttpPut("Update")]
-        public IActionResult Update([FromBody] ClientModel client)
+        public IActionResult Update([FromBody] UserModel user)
         {
             ResponseControllerModel responseService = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
-                ValidationModel validation = _clientValidation.Update(client);
+                ValidationModel validation = _userValidation.Update(user);
                 if (validation.Success)
                 {
-                    ResponseControllerModel InsertResult = _clientService.Update(client);
+                    ResponseControllerModel InsertResult = _userService.Update(user);
                     if (InsertResult.Success)
                     {
                         responseService.Code = (int)HttpStatusCode.OK;
@@ -177,8 +178,8 @@ namespace CRUD.Controllers
         }
 
         // Crea un cliente
-        [HttpDelete("Delete/{identificationNumber}")]
-        public IActionResult Delete(string identificationNumber)
+        [HttpDelete("Delete/{email}")]
+        public IActionResult Delete(string email)
         {
 
             ResponseControllerModel responseModel = new();
@@ -186,13 +187,13 @@ namespace CRUD.Controllers
             try
             {
                 // Valida si el numero de identificación, cumple con el formato correcto.
-                ValidationModel validation = _clientValidation.ReadOrDelete(identificationNumber);
+                ValidationModel validation = _userValidation.ReadOrDelete(email);
 
                 // Cumple con el formato requerido
                 if (validation.Success)
                 {
                     // Elimina el cliente y todo lo realcionado a el en BD
-                    ResponseControllerModel result = _clientService.Delete(identificationNumber);
+                    ResponseControllerModel result = _userService.Delete(email);
 
                     //Si el resultado es exitoso
                     if (result.Success)
@@ -235,6 +236,7 @@ namespace CRUD.Controllers
             }
 
         }
+
 
     }
 }

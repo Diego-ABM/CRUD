@@ -1,6 +1,9 @@
-﻿using CRUD.Models;
+﻿using CRUD.Assests;
+using CRUD.Models;
 using CRUD.Models.bdCrud;
+using CRUD.Models.CrudBD;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace CRUD.Services
 {
@@ -18,26 +21,42 @@ namespace CRUD.Services
 
         // Funciones
         // Registra el usuario
-        public ResponseControllerModel Create(ClientModel cliente)
+        public ResponseControllerModel Create(UserModel user)
         {
             ResponseControllerModel response = new();
             try
             {
-                _crudContext.Cliente.Add(cliente);
-                int result = _crudContext.SaveChanges();
+                // Validamos si el correo no se ecuentra registrado, ya que es tipo UNIQUE
+                int result = _crudContext.Usuario.Where(x => x.CorreoElectronico == user.CorreoElectronico).Select(x => x.Id).FirstOrDefault();
 
-                // Si se guarda correctamente
-                if (result > 0)
+                // Si el usuario no existe
+                if (result == 0)
                 {
-                    response.Code = _internalCode.Exitoso;
-                    response.Message = "Cliente creado con exito";
-                    response.Success = true;
+                    // Cifra la contraseña con el algoritmos SHA-256
+                    user.Contrasenia = Cifrate.PasswordToSha256(user.Contrasenia);
+
+                    _crudContext.Usuario.Add(user);
+                    result = _crudContext.SaveChanges();
+
+                    // Si se guarda correctamente
+                    if (result > 0)
+                    {
+                        response.Code = _internalCode.Exitoso;
+                        response.Message = "Usuario creado con exito";
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Code = _internalCode.Fallo;
+                        response.Message = "No se pudo crear el usuario";
+                        response.Success = false;
+                    }
                 }
                 else
                 {
                     response.Code = _internalCode.Fallo;
-                    response.Message = "No se pudo crear el cliente";
                     response.Success = false;
+                    response.Message = $"El correo electronico se encuentra registrado {user.CorreoElectronico}";
                 }
 
             }
@@ -56,29 +75,28 @@ namespace CRUD.Services
             return response;
 
         }
-        public ResponseControllerModel Read(string numberIdentification)
+        // Consulta el usuario por correo
+        public ResponseControllerModel Read(string email)
         {
             ResponseControllerModel response = new();
-            ClientModel? cliente = null;
+            UserModel? usuario = null;
 
             try
             {
-                cliente = _crudContext.Cliente.Where(data => data.NumeroIdentificacion == numberIdentification).FirstOrDefault();
+                usuario = _crudContext.Usuario.Where(data => data.CorreoElectronico == email).FirstOrDefault();
 
-                if (cliente != null)
+                if (usuario != null)
                 {
                     response.Code = _internalCode.Exitoso;
                     response.Success = true;
                     response.Message = "Encontrado.";
-                    response.Data = cliente;
+                    response.Data = usuario;
                 }
                 else
                 {
-
-                    response.Code = _internalCode.Exitoso;
+                    response.Code = _internalCode.Fallo;
                     response.Success = false;
                     response.Message = "Cliente no existe.";
-
                 }
 
             }
@@ -90,27 +108,45 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseControllerModel Update(ClientModel cliente)
+        public ResponseControllerModel Update(UserModel user)
         {
             ResponseControllerModel response = new();
             try
             {
-                _crudContext.Cliente.Update(cliente);
-                int result = _crudContext.SaveChanges();
+                // Validamos si el correo no se ecuentra registrado, ya que es tipo UNIQUE
+                int result = _crudContext.Usuario.Where(x => x.CorreoElectronico == user.CorreoElectronico).Select(x => x.Id).FirstOrDefault();
 
-                // Si se guarda correctamente
-                if (result > 0)
+                // Si el usuario no existe
+                if (result == 0)
                 {
-                    response.Code = _internalCode.Exitoso;
-                    response.Message = "Cliente actualizado con exito";
-                    response.Success = true;
+                    // Cifra la contraseña con el algoritmos SHA-256
+                    user.Contrasenia = Cifrate.PasswordToSha256(user.Contrasenia);
+
+                    _crudContext.Usuario.Update(user);
+                    result = _crudContext.SaveChanges();
+
+                    // Si se guarda correctamente
+                    if (result > 0)
+                    {
+                        response.Code = _internalCode.Exitoso;
+                        response.Message = "Usuario actualizado con exito";
+                        response.Success = true;
+                    }
+                    else
+                    {
+                        response.Code = _internalCode.Fallo;
+                        response.Message = "No se pudo actualizar el usuario";
+                        response.Success = false;
+                    }
                 }
                 else
                 {
                     response.Code = _internalCode.Fallo;
-                    response.Message = "No se pudo crear el cliente";
                     response.Success = false;
+                    response.Message = $"El correo electronico se encuentra en uso {user.CorreoElectronico}";
                 }
+
+
 
             }
             catch (DbUpdateException ex)
@@ -127,38 +163,37 @@ namespace CRUD.Services
 
             return response;
         }
-        public ResponseControllerModel Delete(string numberIdentification)
+        public ResponseControllerModel Delete(string email)
         {
             ResponseControllerModel response = new();
             try
             {
-                ClientModel? client = _crudContext.Cliente.Where(c => c.NumeroIdentificacion == numberIdentification).FirstOrDefault();
+                UserModel? usuer = _crudContext.Usuario.Where(c => c.CorreoElectronico == email).FirstOrDefault();
 
-                // Si no encuentra el cliente
-                if (client == null)
+                // Si no encuentra el usuario
+                if (usuer == null)
                 {
                     response.Code = _internalCode.Fallo;
                     response.Success = false;
-                    response.Message = "El numero de identificación no existe";
+                    response.Message = $"El correo {email} no existe";
                 }
-                // Cliente encontrado
+                // Usuario encontrado
                 else
                 {
-
-                    _crudContext.Cliente.Remove(client);
+                    _crudContext.Usuario.Remove(usuer);
                     int result = _crudContext.SaveChanges();
 
                     // Si se elimina correctamente
                     if (result > 0)
                     {
                         response.Code = _internalCode.Exitoso;
-                        response.Message = "Cliente eliminado con exito";
+                        response.Message = "Usuario eliminado con exito";
                         response.Success = true;
                     }
                     else
                     {
                         response.Code = _internalCode.Fallo;
-                        response.Message = "No se pudo eliminar el cliente";
+                        response.Message = "No se pudo eliminar el usuario";
                         response.Success = false;
                     }
                 }
@@ -166,17 +201,18 @@ namespace CRUD.Services
             catch (DbUpdateException ex)
             {
                 response.Code = _internalCode.Error;
-                response.Message = $"Ocurrio una exepcion al guardar en BD {ex.Message}";
+                response.Message = $"Ocurrio una exepcion al actualizar en BD {ex.Message}";
             }
             catch (Exception ex)
             {
                 response.Code = _internalCode.Error;
                 response.Message = $"Ocurrio una exepcion no controlada {ex.Message}";
-                //_logger.LogCritical($"Error in process Create {ex.Message}");
             }
 
             return response;
         }
+
+
 
     }
 }

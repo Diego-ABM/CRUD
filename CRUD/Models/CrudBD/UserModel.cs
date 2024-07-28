@@ -17,6 +17,8 @@ namespace CRUD.Models.CrudBD
         public string Usuario { get; set; } = string.Empty;
         [Column("contrasenia")]
         public string Contrasenia { get; set; } = string.Empty;
+        [Column("correo_electronico")]
+        public string CorreoElectronico { get; set; } = string.Empty;
         [Column("edad")]
         public byte Edad { get; set; }
         [Column("id_tipo_identificacion")]
