@@ -1,7 +1,8 @@
-using CRUD.Controllers;
-using CRUD.Controllers.Interfaces;
+using CRUD.Models.bdCrud;
 using CRUD.Services;
 using CRUD.Services.Interfaces;
+using CRUD.Validations;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRUD
 {
@@ -13,14 +14,8 @@ namespace CRUD
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
             AddServices(builder.Services);
+            AddDbContext(builder.Services, builder.Configuration.GetConnectionString("crud")!);
 
             WebApplication app = builder.Build();
 
@@ -43,10 +38,18 @@ namespace CRUD
 
         static void AddServices(IServiceCollection services)
         {
+            services.AddControllers();
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
-            services.AddScoped<IConexionBD, ConexionBD>();
-            services.AddScoped<IClient, Client>();
+            services.AddScoped<ClientService>();
+            services.AddScoped<IClientService, ClientService>();
+            services.AddScoped<ClientValidation>();
+        }
 
+        static void AddDbContext(IServiceCollection services, string connectionString)
+        {
+            services.AddDbContext<CrudContext>(optionsAction => optionsAction.UseSqlServer(connectionString));
         }
 
     }
