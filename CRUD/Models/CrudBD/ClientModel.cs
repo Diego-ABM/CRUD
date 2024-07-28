@@ -12,6 +12,8 @@ namespace CRUD.Models.bdCrud
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Asegura que la columna id sea autoincremental
         [Column("id")]
         public int Id { get; set; }
+        [Column("id_usuario")]
+        public int IdUsuario { get; set; }
         [Column("nombre")]
         public string Nombre { get; set; } = string.Empty;
         [Column("edad")]

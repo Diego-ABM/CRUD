@@ -18,7 +18,7 @@ namespace CRUD.Validations
 
             try
             {
-
+                ValidateId(erros, client.IdUsuario);
                 ValidateName(erros, client.Nombre);
                 ValidateAge(erros, client.Edad);
                 ValidateIdentificationType(erros, client.IdTipoIdentificacion);
@@ -92,6 +92,7 @@ namespace CRUD.Validations
             try
             {
                 ValidateId(erros, client.Id);
+                ValidateId(erros, client.IdUsuario);
                 ValidateName(erros, client.Nombre);
                 ValidateAge(erros, client.Edad);
                 ValidateIdentificationType(erros, client.IdTipoIdentificacion);

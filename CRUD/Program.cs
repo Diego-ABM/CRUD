@@ -9,10 +9,8 @@ using System.Text;
 
 namespace CRUD
 {
-
     static class Program
     {
-
         static void Main()
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
