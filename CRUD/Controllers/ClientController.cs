@@ -2,6 +2,7 @@
 using CRUD.Models.bdCrud;
 using CRUD.Services.Interfaces;
 using CRUD.Validations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -22,6 +23,7 @@ namespace CRUD.Controllers
         }
 
         // Crea un cliente
+        [Authorize]
         [HttpPost("Create")]
         public IActionResult Create([FromBody] ClientModel client)
         {
@@ -70,10 +72,11 @@ namespace CRUD.Controllers
         }
 
         // Consulta un cliente por su numero de identificación
+        [Authorize]
         [HttpGet("Read/{identificationNumber}")]
         public IActionResult Read(string identificationNumber)
         {
-            ResponseControllerModel responseModel = new();
+            ResponseControllerModel response = new();
 
             try
             {
@@ -84,27 +87,23 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Conuslta el numero de identificación en BD
-                    ResponseControllerModel result = _clientService.Read(identificationNumber);
+                    response = _clientService.Read(identificationNumber);
 
                     //Si encontro un cliente
-                    if (result.Success)
+                    if (response.Success)
                     {
                         // Seteamos los datos para que el servicio responda
-                        responseModel.Code = (int)HttpStatusCode.OK;
-                        responseModel.Message = result.Message;
-                        responseModel.Success = result.Success;
-                        responseModel.Data = result.Data;
+                        response.Code = (int)HttpStatusCode.OK;
 
-                        return Ok(responseModel);
+                        return Ok(response);
                     }
                     // No encontrado
                     else
                     {
                         // Seteamos los datos para que el servicio responda
-                        responseModel.Code = (int)HttpStatusCode.NotFound;
-                        responseModel.Message = result.Message;
+                        response.Code = (int)HttpStatusCode.NotFound;
 
-                        return NotFound(responseModel);
+                        return NotFound(response);
                     }
 
                 }
@@ -112,11 +111,11 @@ namespace CRUD.Controllers
                 else
                 {
                     // Seteamos los datos para que el servicio responda 
-                    responseModel.Success = false;
-                    responseModel.Message = validation.Message;
-                    responseModel.RequestErros = validation.Erros;
+                    response.Success = false;
+                    response.Message = validation.Message;
+                    response.RequestErros = validation.Erros;
 
-                    return BadRequest(responseModel);
+                    return BadRequest(response);
                 }
 
             }
@@ -128,7 +127,8 @@ namespace CRUD.Controllers
 
         }
 
-        // Crea un cliente
+        // Crea un cliente.
+        [Authorize]
         [HttpPut("Update")]
         public IActionResult Update([FromBody] ClientModel client)
         {
@@ -177,6 +177,7 @@ namespace CRUD.Controllers
         }
 
         // Crea un cliente
+        [Authorize]
         [HttpDelete("Delete/{identificationNumber}")]
         public IActionResult Delete(string identificationNumber)
         {

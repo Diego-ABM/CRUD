@@ -2,6 +2,7 @@
 using CRUD.Models.CrudBD;
 using CRUD.Services;
 using CRUD.Validations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -22,6 +23,8 @@ namespace CRUD.Controllers
         }
 
         // Crea un cliente
+
+        [Authorize]
         [HttpPost("Create")]
         public IActionResult Create([FromBody] UserModel user)
         {
@@ -70,6 +73,7 @@ namespace CRUD.Controllers
         }
 
         // Consulta un cliente por su numero de identificación
+        [Authorize]
         [HttpGet("Read/{email}")]
         public IActionResult Read(string email)
         {
@@ -130,6 +134,7 @@ namespace CRUD.Controllers
         }
 
         // Crea un cliente
+        [Authorize]
         [HttpPut("Update")]
         public IActionResult Update([FromBody] UserModel user)
         {
@@ -178,6 +183,7 @@ namespace CRUD.Controllers
         }
 
         // Crea un cliente
+        [Authorize]
         [HttpDelete("Delete/{email}")]
         public IActionResult Delete(string email)
         {
