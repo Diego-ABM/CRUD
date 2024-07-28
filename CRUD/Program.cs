@@ -2,6 +2,7 @@ using CRUD.Models.bdCrud;
 using CRUD.Services;
 using CRUD.Services.Interfaces;
 using CRUD.Validations;
+using CRUD.Validations.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -57,12 +58,12 @@ namespace CRUD
             services.AddScoped<IClientEmailService, ClientEmailService>();
 
 
-            services.AddScoped<ClientValidation>();
-            services.AddScoped<ClientContactValidation>();
-            services.AddScoped<ClientAddressValidation>();
-            services.AddScoped<ClientEmailValidation>();
-            services.AddScoped<UserValidation>();
-            services.AddScoped<AuthValidation>();
+            services.AddScoped<IClientValidation, ClientValidation>();
+            services.AddScoped<IClientContactValidation, ClientContactValidation>();
+            services.AddScoped<IClientAddressValidation, ClientAddressValidation>();
+            services.AddScoped<IClientEmailValidation, ClientEmailValidation>();
+            services.AddScoped<IUserValidation, UserValidation>();
+            services.AddScoped<IAuthValidation, AuthValidation>();
         }
         static void AddDbContext(IServiceCollection services, string connectionString)
         {

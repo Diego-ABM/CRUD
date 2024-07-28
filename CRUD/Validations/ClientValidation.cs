@@ -1,12 +1,13 @@
 ﻿using CRUD.Models;
 using CRUD.Models.bdCrud;
 using CRUD.Models.CrudBD;
+using CRUD.Validations.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 
 namespace CRUD.Validations
 {
-    public class ClientValidation
+    public class ClientValidation : IClientValidation
     {
         // Variables
         private readonly IdentificationTypeModel _identificationTypeStruct = new();

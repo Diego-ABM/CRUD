@@ -1,11 +1,12 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
+using CRUD.Validations.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 
 namespace CRUD.Validations
 {
-    public class ClientAddressValidation
+    public class ClientAddressValidation : IClientAddressValidation
     {
         // Variables
         private readonly CountryModel _countryModel = new();

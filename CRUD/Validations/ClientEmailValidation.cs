@@ -1,11 +1,12 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
+using CRUD.Validations.Interfaces;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
 {
-    public class ClientEmailValidation
+    public class ClientEmailValidation : IClientEmailValidation
     {
         // Variables
         private readonly CountryModel _countryModel = new();

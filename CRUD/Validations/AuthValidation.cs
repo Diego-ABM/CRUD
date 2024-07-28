@@ -1,11 +1,12 @@
 ﻿using CRUD.Models;
+using CRUD.Validations.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
 {
-    public class AuthValidation
+    public class AuthValidation : IAuthValidation
     {
         // Variables
         private readonly InternalCode _internalCodes = new();

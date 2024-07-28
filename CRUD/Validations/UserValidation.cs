@@ -1,11 +1,12 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
+using CRUD.Validations.Interfaces;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
 namespace CRUD.Validations
 {
-    public class UserValidation
+    public class UserValidation : IUserValidation
     {
         // Variables
         private readonly IdentificationTypeModel _identificationTypeStruct = new();
