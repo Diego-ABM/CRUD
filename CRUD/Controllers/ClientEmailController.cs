@@ -1,7 +1,7 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
 using CRUD.Services;
-using CRUD.Validations;
+using CRUD.Validations.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -13,10 +13,10 @@ namespace CRUD.Controllers
     public class ClientEmailController : ControllerBase
     {
         // Inyecciones
-        private readonly ClientEmailService _clientEmailService;
-        private readonly ClientEmailValidation _clientEmailValidation;
+        private readonly IClientEmailService _clientEmailService;
+        private readonly IClientEmailValidation _clientEmailValidation;
 
-        public ClientEmailController(ClientEmailService clientEmailService, ClientEmailValidation clientEmailValidation)
+        public ClientEmailController(IClientEmailService clientEmailService, IClientEmailValidation clientEmailValidation)
         {
             _clientEmailService = clientEmailService;
             _clientEmailValidation = clientEmailValidation;

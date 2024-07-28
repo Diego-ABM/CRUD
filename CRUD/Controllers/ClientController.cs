@@ -1,7 +1,7 @@
 ﻿using CRUD.Models;
 using CRUD.Models.bdCrud;
 using CRUD.Services.Interfaces;
-using CRUD.Validations;
+using CRUD.Validations.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -14,9 +14,9 @@ namespace CRUD.Controllers
     {
         // Inyecciones
         private readonly IClientService _clientService;
-        private readonly ClientValidation _clientValidation;
+        private readonly IClientValidation _clientValidation;
 
-        public ClientController(IClientService clientService, ClientValidation clientValidation)
+        public ClientController(IClientService clientService, IClientValidation clientValidation)
         {
             _clientService = clientService;
             _clientValidation = clientValidation;

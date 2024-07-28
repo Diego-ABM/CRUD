@@ -1,7 +1,7 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
-using CRUD.Services;
-using CRUD.Validations;
+using CRUD.Services.Interfaces;
+using CRUD.Validations.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -13,10 +13,10 @@ namespace CRUD.Controllers
     public class ClientContactController : ControllerBase
     {
         // Inyecciones
-        private readonly ClientContactService _contactService;
-        private readonly ClientContactValidation _contactValidation;
+        private readonly IClientContactService _contactService;
+        private readonly IClientContactValidation _contactValidation;
 
-        public ClientContactController(ClientContactService contactService, ClientContactValidation clientContact)
+        public ClientContactController(IClientContactService contactService, IClientContactValidation clientContact)
         {
             _contactService = contactService;
             _contactValidation = clientContact;

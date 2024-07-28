@@ -1,7 +1,7 @@
 ﻿using CRUD.Models;
 using CRUD.Models.CrudBD;
 using CRUD.Services;
-using CRUD.Validations;
+using CRUD.Validations.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
@@ -13,10 +13,10 @@ namespace CRUD.Controllers
     public class ClientAddressController : ControllerBase
     {
         // Inyecciones
-        private readonly ClientAddressService _clientAddressService;
-        private readonly ClientAddressValidation _clientAddressValidation;
+        private readonly IClientAddressService _clientAddressService;
+        private readonly IClientAddressValidation _clientAddressValidation;
 
-        public ClientAddressController(ClientAddressService clientAddressService, ClientAddressValidation clientAddressValidation)
+        public ClientAddressController(IClientAddressService clientAddressService, IClientAddressValidation clientAddressValidation)
         {
             _clientAddressService = clientAddressService;
             _clientAddressValidation = clientAddressValidation;

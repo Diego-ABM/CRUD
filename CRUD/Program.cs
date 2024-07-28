@@ -58,12 +58,12 @@ namespace CRUD
             services.AddScoped<IClientEmailService, ClientEmailService>();
 
 
+            services.AddScoped<IAuthValidation, AuthValidation>();
             services.AddScoped<IClientValidation, ClientValidation>();
             services.AddScoped<IClientContactValidation, ClientContactValidation>();
             services.AddScoped<IClientAddressValidation, ClientAddressValidation>();
             services.AddScoped<IClientEmailValidation, ClientEmailValidation>();
             services.AddScoped<IUserValidation, UserValidation>();
-            services.AddScoped<IAuthValidation, AuthValidation>();
         }
         static void AddDbContext(IServiceCollection services, string connectionString)
         {

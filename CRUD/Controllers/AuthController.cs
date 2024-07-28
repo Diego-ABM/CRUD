@@ -1,6 +1,6 @@
 ﻿using CRUD.Models;
-using CRUD.Services;
-using CRUD.Validations;
+using CRUD.Services.Interfaces;
+using CRUD.Validations.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,10 +15,10 @@ namespace CRUD.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly AuthService _authService;
-        private readonly AuthValidation _authValidation;
+        private readonly IAuthService _authService;
+        private readonly IAuthValidation _authValidation;
 
-        public AuthController(IConfiguration configuration, AuthValidation authValidation, AuthService authService)
+        public AuthController(IConfiguration configuration, IAuthValidation authValidation, IAuthService authService)
         {
             _configuration = configuration;
             _authValidation = authValidation;
