@@ -96,6 +96,8 @@
 ## Proximos Pasos
 
 - Si pudiste realizar los pasos de autenticación y consulta de usuario, a partir de este punto puedes utilizar los endpoints desde postman, con el token generado.
+- Esta es una colección para probar los create de cada metodo.
+  [API CRUD.postman_collection.json](https://github.com/user-attachments/files/16406641/API.CRUD.postman_collection.json)
   
   Nota : El token tiene tiempo de expiración, por lo que si recibes '401 Unauthorized' deberas generar otro de nuevo.
 
