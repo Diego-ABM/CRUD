@@ -52,7 +52,7 @@
     ```json
     {
       "ConnectionStrings": {
-        "crud": "Server=tu_servidor;Database=CRUD;User Id=tu_usuario;Password=tu_contraseña;"
+        "crud": "Server='tu_servidor';Database='CRUD';User='tu_usuario';Password='tu_contraseña';"
       }
     }
     ```
@@ -61,7 +61,7 @@
     ```json
     {
       "ConnectionStrings": {
-        "crud": "Server='tu_servidor';Database=CRUD;User=tu_usuario;TrustServerCertificate=True;Trusted_Connection=True;"
+        "crud": "Server='tu_servidor';Database='CRUD';User='tu_usuario';TrustServerCertificate=True;Trusted_Connection=True;"
       }
     }
     ```
@@ -74,19 +74,21 @@
 
 ### Autenticación
 
-    Para autenticarse, envía una solicitud POST a `/Auth/login`, desde Postman con el siguiente cuerpo:
+    Para autenticarse, envía una solicitud POST a `/Auth/LoginAsync`, desde Postman con el siguiente cuerpo:
 
+    Ejemplo : https://localhost:7033/Auth/LoginAsync
+    
     ```json
     {
       "correoElectronico": "admin@domain.com",
       "contrasenia": "Password123!"
     }
-
+     ```
 ### Consultar Usuario
 
-    Luego de autenticarse, copia el token que regreso el servicio
-    En postman selecciona Authorization -> Auth Type -> Bearer Token y pega el token
-    luego envia una solicitud GET a `/User/Read/admin%40gmail.com`
+    Luego de autenticarse, copia el token que regreso el servicio.
+    En postman selecciona Authorization -> Auth Type -> Bearer Token y pega el token.
+    luego envia una solicitud GET a `/User/ReadAsync/admin%40domain.com`.
 
     Esto deberia mostrar los datos del usuario con el que iniciaste sesión
 
