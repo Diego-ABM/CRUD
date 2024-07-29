@@ -24,16 +24,20 @@ namespace CRUD.Services
             ResponseModel response = new();
             try
             {
+                // Prepara EF para crear la data
                 _crudContext.ClienteContacto.Add(contact);
+
+                // Intenta crear
                 int result = await _crudContext.SaveChangesAsync();
 
-                // Si se guarda correctamente
+                // Si se crea correctamente
                 if (result > 0)
                 {
                     response.Code = _internalCode.Exitoso;
                     response.Message = "Creado con exito";
                     response.Success = true;
                 }
+                // Fallo al crear
                 else
                 {
                     response.Code = _internalCode.Fallo;
@@ -64,8 +68,10 @@ namespace CRUD.Services
 
             try
             {
+                // Intenta obtener la data con el parametro recibido
                 contact = await _crudContext.ClienteContacto.Where(cc => cc.IdCliente == idClient).ToListAsync();
 
+                // Si encuentra datos
                 if (contact.Count != 0)
                 {
                     response.Code = _internalCode.Exitoso;
@@ -73,6 +79,7 @@ namespace CRUD.Services
                     response.Message = "Encontrado.";
                     response.Data = contact;
                 }
+                // No se encuentra datos
                 else
                 {
                     response.Code = _internalCode.Fallo;
@@ -96,8 +103,10 @@ namespace CRUD.Services
             ResponseModel response = new();
             try
             {
+                // Prepara EF para actualzar
                 _crudContext.ClienteContacto.Update(contact);
 
+                // Intenta actualizar
                 int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
@@ -107,6 +116,7 @@ namespace CRUD.Services
                     response.Message = "Actualizado con exito.";
                     response.Success = true;
                 }
+                // Actualización fallo
                 else
                 {
                     response.Code = _internalCode.Fallo;
@@ -150,6 +160,7 @@ namespace CRUD.Services
                         response.Message = "Eliminado con exito";
                         response.Success = true;
                     }
+                    // No se pudo eliminar
                     else
                     {
                         response.Code = _internalCode.Fallo;

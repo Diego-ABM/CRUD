@@ -144,7 +144,7 @@ namespace CRUD.Validations
             return validation;
         }
 
-        // Validaciones
+        // Metodos - Validaciones
         private static void ValidateId(ConcurrentDictionary<string, List<string>> erros, int idClient)
         {
             if (idClient == 0)

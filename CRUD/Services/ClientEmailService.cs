@@ -23,7 +23,10 @@ namespace CRUD.Services
             ResponseModel response = new();
             try
             {
+                // Prepara EF para crear
                 _crudContext.ClienteCorreoElectronico.Add(email);
+
+                // Intenta crear
                 int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
@@ -75,6 +78,7 @@ namespace CRUD.Services
                     contactEmail = await _crudContext.ClienteCorreoElectronico.Where(cc => cc.IdCliente == idClient && cc.CorreoElectronico == email).ToListAsync();
                 }
 
+                // Si encuntra datos
                 if (contactEmail.Count != 0)
                 {
                     response.Code = _internalCode.Exitoso;
@@ -82,12 +86,12 @@ namespace CRUD.Services
                     response.Message = "Encontrado.";
                     response.Data = contactEmail;
                 }
+                // No encuentra datos
                 else
                 {
                     response.Code = _internalCode.Fallo;
                     response.Success = false;
                     response.Message = "No existe.";
-
                 }
 
             }
@@ -105,8 +109,10 @@ namespace CRUD.Services
             ResponseModel response = new();
             try
             {
+                // Prepara EF para actualizar
                 _crudContext.ClienteCorreoElectronico.Update(email);
 
+                // Intenta actualizar
                 int result = await _crudContext.SaveChangesAsync();
 
                 // Si se guarda correctamente
@@ -116,6 +122,7 @@ namespace CRUD.Services
                     response.Message = "Actualizado con exito.";
                     response.Success = true;
                 }
+                // Fallo al guardar
                 else
                 {
                     response.Code = _internalCode.Fallo;
@@ -150,7 +157,10 @@ namespace CRUD.Services
                 // Encontrado
                 if (clientEmail != null)
                 {
+                    // Prepara EF para eliminar
                     _crudContext.ClienteCorreoElectronico.Remove(clientEmail);
+
+                    // Intenta eliminar
                     int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente

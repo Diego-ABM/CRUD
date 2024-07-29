@@ -20,7 +20,6 @@ namespace CRUD.Services
         }
 
         // Funciones
-        // Registra el usuario
         public async Task<ResponseModel> CreateAsync(UserModel user)
         {
             ResponseModel response = new();

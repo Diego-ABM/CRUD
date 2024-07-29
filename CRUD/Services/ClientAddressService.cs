@@ -23,16 +23,20 @@ namespace CRUD.Services
             ResponseModel response = new();
             try
             {
+                // Prepara a EF para agregar la data
                 _crudContext.ClienteDireccion.Add(address);
-                int result = await _crudContext.SaveChangesAsync();
 
-                // Si se guarda correctamente
+                // Intenta guardar en BD
+                int result = await _crudContext.SaveChangesAsync(); // Result, contiene las filas afectadas
+
+                // Creacion exitosa
                 if (result != 0)
                 {
                     response.Code = _internalCode.Exitoso;
                     response.Message = "Creado con exito";
                     response.Success = true;
                 }
+                // No se creo
                 else
                 {
                     response.Code = _internalCode.Fallo;
@@ -43,11 +47,13 @@ namespace CRUD.Services
             }
             catch (DbUpdateException ex)
             {
+                // En caso de excepcion al guardar en BD
                 response.Code = _internalCode.Error;
                 response.Message = $"Ocurrio una exepcion al guardar en BD {ex.Message}";
             }
             catch (Exception ex)
             {
+                // En caso de exepcion no controlada
                 response.Code = _internalCode.Error;
                 response.Message = $"Ocurrio una exepcion no controlada {ex.Message}";
                 //_logger.LogCritical($"Error in process Create {ex.Message}");
@@ -63,8 +69,10 @@ namespace CRUD.Services
 
             try
             {
+                // Consulta en BD
                 clientAddress = await _crudContext.ClienteDireccion.Where(cc => cc.IdCliente == idClient).ToListAsync();
 
+                // Encontro datos
                 if (clientAddress.Count != 0)
                 {
                     response.Code = _internalCode.Exitoso;
@@ -72,14 +80,13 @@ namespace CRUD.Services
                     response.Message = "Encontrado.";
                     response.Data = clientAddress;
                 }
+                // No entontro datos
                 else
                 {
                     response.Code = _internalCode.Fallo;
                     response.Success = false;
                     response.Message = "No existe.";
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -95,17 +102,20 @@ namespace CRUD.Services
             ResponseModel response = new();
             try
             {
+                // Prepara EF para actualzar la data
                 _crudContext.ClienteDireccion.Update(clientAddress);
 
+                // Intenta actualizar
                 int result = await _crudContext.SaveChangesAsync();
 
-                // Si se guarda correctamente
+                // Si se actualiza correctamente
                 if (result > 0)
                 {
                     response.Code = _internalCode.Exitoso;
                     response.Message = "Actualizado con exito.";
                     response.Success = true;
                 }
+                // Fallo la actualización
                 else
                 {
                     response.Code = _internalCode.Fallo;
@@ -123,7 +133,6 @@ namespace CRUD.Services
             {
                 response.Code = _internalCode.Error;
                 response.Message = $"Ocurrio una exepcion no controlada {ex.Message}";
-                //_logger.LogCritical($"Error in process Create {ex.Message}");
             }
 
             return response;
@@ -139,7 +148,10 @@ namespace CRUD.Services
                 // Encontrado
                 if (clientEmail != null)
                 {
+                    // Preparamos EF para eliminar
                     _crudContext.ClienteDireccion.Remove(clientEmail);
+
+                    // Intenta eliminar
                     int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente
@@ -149,6 +161,7 @@ namespace CRUD.Services
                         response.Message = "Eliminado con exito";
                         response.Success = true;
                     }
+                    // Fallo la elimiancion
                     else
                     {
                         response.Code = _internalCode.Fallo;
@@ -157,7 +170,7 @@ namespace CRUD.Services
                     }
 
                 }
-                // No encontrado
+                // No encontrado, no es necesario continuar
                 else
                 {
                     response.Code = _internalCode.Fallo;

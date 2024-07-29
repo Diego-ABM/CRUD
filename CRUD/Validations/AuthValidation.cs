@@ -59,7 +59,7 @@ namespace CRUD.Validations
             return validation;
         }
 
-        // Validaciones
+        // Metodos - Validaciones
         private static void ValidateEmail(ConcurrentDictionary<string, List<string>> erros, string email)
         {
             // Expresión regular para validar que el strign sea un correo electrónico

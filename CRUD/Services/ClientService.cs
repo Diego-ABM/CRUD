@@ -132,20 +132,17 @@ namespace CRUD.Services
             ResponseModel response = new();
             try
             {
+                // Valida si el cliente existe antes de eliminar
                 ClientModel? client = _crudContext.Cliente.Where(c => c.NumeroIdentificacion == numberIdentification).FirstOrDefault();
 
-                // Si no encuentra el cliente
-                if (client == null)
+                // Si encuentra el cliente
+                if (client != null)
                 {
-                    response.Code = _internalCode.Fallo;
-                    response.Success = false;
-                    response.Message = "El numero de identificación no existe";
-                }
-                // Cliente encontrado
-                else
-                {
-
+                    // Prepara EF para eliminar
+                    // Importante : Por la configuracón en BD eliminar el cliente eliminara todo lo relacionado a el. 
                     _crudContext.Cliente.Remove(client);
+
+                    // Intenta eliminar
                     int result = await _crudContext.SaveChangesAsync();
 
                     // Si se elimina correctamente
@@ -161,6 +158,13 @@ namespace CRUD.Services
                         response.Message = "No se pudo eliminar el cliente";
                         response.Success = false;
                     }
+                }
+                // Cliente no encontrado
+                else
+                {
+                    response.Code = _internalCode.Fallo;
+                    response.Success = false;
+                    response.Message = "El numero de identificación no existe";
                 }
             }
             catch (DbUpdateException ex)
