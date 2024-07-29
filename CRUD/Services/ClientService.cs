@@ -176,7 +176,6 @@ namespace CRUD.Services
             {
                 response.Code = _internalCode.Error;
                 response.Message = $"Ocurrio una exepcion no controlada {ex.Message}";
-                //_logger.LogCritical($"Error in process Create {ex.Message}");
             }
 
             return response;
