@@ -95,8 +95,9 @@
      Esto mostrara los datos del usuario con el que iniciaste sesión.
 ## Proximos Pasos
 
-- Si pudiste realizar los pasos de autenticació y consulta de usuario, a partir de este punto puedes utilizar los endpoints desde postman, con el token generado.
-  Nota : El token tiene timepo de expiración, por lo que si recibes '401 Unauthorized' deberas generar otro de nuevo.
+- Si pudiste realizar los pasos de autenticación y consulta de usuario, a partir de este punto puedes utilizar los endpoints desde postman, con el token generado.
+  
+  Nota : El token tiene tiempo de expiración, por lo que si recibes '401 Unauthorized' deberas generar otro de nuevo.
 
 ## Documentación
 - La documentación completa de la API está disponible en Swagger. Para acceder, ejecuta la aplicación y navega a http://localhost:puerto/swagger.
