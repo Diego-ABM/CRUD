@@ -167,14 +167,9 @@ namespace CRUD.Validations
         private static void ValidatePhoneType(ConcurrentDictionary<string, List<string>> erros, string phone)
         {
             // Valores aceptados en BD fijo o movil
-            List<string> PhoneType = ["fijo", "movil"];
-
-            if (!PhoneType.Contains(phone))
-            {
-                erros.TryAdd("tipoTelefono", ["Solo se aceptan valores fijo o movil"]);
-            }
-
-
+            if (phone == "fijo") return;
+            else if (phone == "movil") return;
+            else erros.TryAdd("tipoTelefono", ["Solo se aceptan valores fijo o movil"]);
 
         }
         private static void ValidatePhoneNumber(ConcurrentDictionary<string, List<string>> erros, string phone)
