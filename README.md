@@ -74,11 +74,11 @@
 
 ### Autenticación
 
-    Para autenticarse, envía una solicitud POST a `/Auth/LoginAsync`, desde Postman con el siguiente cuerpo:
+- Para autenticarse, envía una solicitud POST a `/Auth/LoginAsync`, desde Postman con el siguiente cuerpo:
 
-    Ejemplo : https://localhost:7033/Auth/LoginAsync
-    
-    ```json
+- Ejemplo EndPoint : https://localhost:7033/Auth/LoginAsync
+- Cuerpo
+     ```json
     {
       "correoElectronico": "admin@domain.com",
       "contrasenia": "Password123!"
@@ -86,15 +86,17 @@
      ```
 ### Consultar Usuario
 
-    Luego de autenticarse, copia el token que regreso el servicio.
-    En postman selecciona Authorization -> Auth Type -> Bearer Token y pega el token.
-    luego envia una solicitud GET a `/User/ReadAsync/admin%40domain.com`.
+  1. Copia el token que regreso el servicio de autenticación
+  
+  2. Abre Postman
+     selecciona Authorization -> Auth Type -> Bearer Token y pega el token.
+     
+  3. Envia una solicitud GET a `/User/ReadAsync/admin@domain.com`.
+     Esto mostrara los datos del usuario con el que iniciaste sesión.
+## Proximos Pasos
 
-    Esto deberia mostrar los datos del usuario con el que iniciaste sesión
-
-    A partir de este punto puedes utilizar los endpoints desde postman, con el token generado.
-
-    Nota : El token tiene timepo de expiración, por lo que si recibes '401 Unauthorized' deberas generar otro de nuevo.
+- Si pudiste realizar los pasos de autenticació y consulta de usuario, a partir de este punto puedes utilizar los endpoints desde postman, con el token generado.
+  Nota : El token tiene timepo de expiración, por lo que si recibes '401 Unauthorized' deberas generar otro de nuevo.
 
 ## Documentación
-    La documentación completa de la API está disponible en Swagger. Para acceder, ejecuta la aplicación y navega a http://localhost:puerto/swagger.
+- La documentación completa de la API está disponible en Swagger. Para acceder, ejecuta la aplicación y navega a http://localhost:puerto/swagger.
