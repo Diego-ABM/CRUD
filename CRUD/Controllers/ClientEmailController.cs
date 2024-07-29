@@ -12,17 +12,18 @@ namespace CRUD.Controllers
     [Route("[controller]")]
     public class ClientEmailController : ControllerBase
     {
-        // Inyecciones
+        // Variables
         private readonly IClientEmailService _clientEmailService;
         private readonly IClientEmailValidation _clientEmailValidation;
 
+        // Constructor
         public ClientEmailController(IClientEmailService clientEmailService, IClientEmailValidation clientEmailValidation)
         {
             _clientEmailService = clientEmailService;
             _clientEmailValidation = clientEmailValidation;
         }
 
-        // Crea un cliente
+        // Servicios
         [Authorize]
         [HttpPost("CreateAsync")]
         public async Task<IActionResult> CreateAsync([FromBody] ClientEmailModel email)
@@ -32,22 +33,27 @@ namespace CRUD.Controllers
             {
                 // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = await _clientEmailValidation.CreateAsync(email);
+
+                // Supera las validaciones
                 if (validation.Success)
                 {
+                    // Intenta crear en BD
                     response = await _clientEmailService.CreateAsync(email);
+
+                    // Creación exitosa
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
-
                         return Ok(response);
                     }
+                    // Creación fallida
                     else
                     {
                         response.Code = (int)HttpStatusCode.Conflict;
-
                         return Conflict(response);
                     }
                 }
+                // No supera las validaciones
                 else
                 {
                     response.Code = (int)HttpStatusCode.BadRequest;
@@ -61,44 +67,47 @@ namespace CRUD.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 return StatusCode(500, ex.Message);
             }
 
         }
 
-        // Consulta un cliente por su numero de identificación
         [Authorize]
         [HttpGet("ReadAsync/")]
         public async Task<IActionResult> ReadAsync(int idClient, string email = "")
         {
+
             ResponseModel response = new();
             ValidationModel validation;
             try
             {
-                // Valida el parametro ocpional
+                // Inicia las validaciones del Request
+                // Valida el parametro opcional (email)
                 if (string.IsNullOrEmpty(email))
+                    // Valida solo el id
                     validation = await _clientEmailValidation.ReadOrDeleteAsync(idClient);
                 else
+                    // Valida id y email
                     validation = await _clientEmailValidation.ReadOrDeleteAsync(idClient, email);
-
 
                 // Validaciones superadas
                 if (validation.Success)
                 {
                     // Valida el parametro ocpional
                     if (string.IsNullOrEmpty(email))
+                        // En caso de que se diligencie solo el id se regresan todos los email asociados al cliente
                         response = await _clientEmailService.ReadAsync(idClient);
                     else
+                        // En caso que se diligencien ambos regresa unicamente ese registro
                         response = await _clientEmailService.ReadAsync(idClient, email);
 
-                    //Si encontro un cliente
+                    // Consulta exitosa
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
                         return Ok(response);
                     }
-                    // No encontrado
+                    // Consulta fallida
                     else
                     {
                         response.Code = (int)HttpStatusCode.NotFound;
@@ -137,22 +146,27 @@ namespace CRUD.Controllers
             {
                 // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = await _clientEmailValidation.UpdateAsync(email);
+
+                // Validaciones superadas
                 if (validation.Success)
                 {
+                    // Intenta actualizar
                     response = await _clientEmailService.UpdateAsync(email);
+
+                    // Actualizacion exitosa
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
-
                         return Ok(response);
                     }
+                    // Actualización fallida
                     else
                     {
                         response.Code = (int)HttpStatusCode.InternalServerError;
-
                         return BadRequest(response);
                     }
                 }
+                // No cumple con el formato esperado
                 else
                 {
                     response.Code = (int)HttpStatusCode.BadRequest;
@@ -164,7 +178,6 @@ namespace CRUD.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 return StatusCode(500, ex.Message);
             }
 

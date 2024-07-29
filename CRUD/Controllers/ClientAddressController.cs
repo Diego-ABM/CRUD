@@ -12,18 +12,18 @@ namespace CRUD.Controllers
     [Route("[controller]")]
     public class ClientAddressController : ControllerBase
     {
-        // Inyecciones
+        // Variables
         private readonly IClientAddressService _clientAddressService;
         private readonly IClientAddressValidation _clientAddressValidation;
 
+        // Constructor
         public ClientAddressController(IClientAddressService clientAddressService, IClientAddressValidation clientAddressValidation)
         {
             _clientAddressService = clientAddressService;
             _clientAddressValidation = clientAddressValidation;
         }
 
-        // Crea un cliente
-
+        // Servicios
         [Authorize]
         [HttpPost("CreateAsync")]
         public async Task<IActionResult> CreateAsync([FromBody] ClientAddressModel address)
@@ -33,42 +33,45 @@ namespace CRUD.Controllers
             {
                 // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = await _clientAddressValidation.CreateAsync(address);
+
+                // Supera las validaciones
                 if (validation.Success)
                 {
+                    // Inicia proceso de creación
                     response = await _clientAddressService.CreateAsync(address);
+
+                    // Creado correctamente
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
-
                         return Ok(response);
                     }
+                    // No se puedo crear
                     else
                     {
                         response.Code = (int)HttpStatusCode.Conflict;
-
                         return Conflict(response);
                     }
                 }
+                // No supera las validaciones
                 else
                 {
+                    // Seteamos los datos para que el servicio responda 
                     response.Code = (int)HttpStatusCode.BadRequest;
                     response.Message = validation.Message;
                     response.RequestErros = validation.Erros;
 
                     return BadRequest(response);
-
                 }
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                // En caso de excepcion no controlada
                 return StatusCode(500, ex.Message);
             }
 
         }
 
-        // Consulta un cliente por su numero de identificación
         [Authorize]
         [HttpGet("ReadAsync/{idClient}")]
         public async Task<IActionResult> ReadAsync(int idClient)
@@ -77,13 +80,13 @@ namespace CRUD.Controllers
 
             try
             {
-                // Valida si el numero de identificación, cumple con el formato correcto.
+                // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = await _clientAddressValidation.ReadOrDeleteAsync(idClient);
 
                 // Cumple con el formato requerido
                 if (validation.Success)
                 {
-                    // Conuslta el numero de identificación en BD
+                    // Inicia consulta en BD
                     response = await _clientAddressService.ReadAsync(idClient);
 
                     //Si encontro un cliente
@@ -133,22 +136,25 @@ namespace CRUD.Controllers
                 ValidationModel validation = await _clientAddressValidation.UpdateAsync(address);
                 if (validation.Success)
                 {
+                    // Incia proceso en BD
                     response = await _clientAddressService.UpdateAsync(address);
+
+                    // Proceso exitoso
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
-
                         return Ok(response);
                     }
                     else
                     {
                         response.Code = (int)HttpStatusCode.InternalServerError;
-
                         return BadRequest(response);
                     }
                 }
+                // No supera las validaciones
                 else
                 {
+                    // Seteamos los valores
                     response.Code = (int)HttpStatusCode.BadRequest;
                     response.Message = validation.Message;
                     response.RequestErros = validation.Erros;
@@ -158,7 +164,6 @@ namespace CRUD.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 return StatusCode(500, ex.Message);
             }
 
@@ -180,17 +185,16 @@ namespace CRUD.Controllers
                 // Cumple con el formato requerido
                 if (validation.Success)
                 {
-                    // Elimina el cliente y todo lo realcionado a el en BD
+                    // Intenta eliminar en BD
                     response = await _clientAddressService.DeleteAsync(idClient);
 
                     //Si el resultado es exitoso
                     if (response.Success)
                     {
-
                         response.Code = (int)HttpStatusCode.OK;
                         return Ok(response);
                     }
-                    // No encontrado
+                    // No encontrado o no se pudo eliminar
                     else
                     {
                         response.Code = (int)HttpStatusCode.NotFound;
@@ -198,7 +202,7 @@ namespace CRUD.Controllers
                     }
 
                 }
-                // No cumple con el formato requerido
+                // No supera las validaciones
                 else
                 {
                     // Seteamos los datos para que el servicio responda 

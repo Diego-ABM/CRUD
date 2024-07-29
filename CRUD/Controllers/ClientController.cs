@@ -12,54 +12,55 @@ namespace CRUD.Controllers
     [Route("[controller]")]
     public class ClientController : ControllerBase
     {
-        // Inyecciones
+        // Variables
         private readonly IClientService _clientService;
         private readonly IClientValidation _clientValidation;
 
+        // Constructor
         public ClientController(IClientService clientService, IClientValidation clientValidation)
         {
             _clientService = clientService;
             _clientValidation = clientValidation;
         }
 
-        // Crea un cliente
+        // Servicios
         [Authorize]
         [HttpPost("CreateAsync")]
         public async Task<IActionResult> CreateAsync([FromBody] ClientModel client)
         {
-            ResponseModel responseService = new();
+            ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = await _clientValidation.CreateAsync(client);
+
+                // Supera las validaciones
                 if (validation.Success)
                 {
-                    ResponseModel InsertResult = await _clientService.CreateAsync(client);
-                    if (InsertResult.Success)
-                    {
-                        responseService.Code = (int)HttpStatusCode.OK;
-                        responseService.Message = InsertResult.Message;
-                        responseService.Success = true;
+                    // Intenta crear en BD
+                    response = await _clientService.CreateAsync(client);
 
-                        return Ok(responseService);
+                    // Creación exitosa
+                    if (response.Success)
+                    {
+                        response.Code = (int)HttpStatusCode.OK;
+                        return Ok(response);
                     }
+                    // Creación fallida
                     else
                     {
-                        responseService.Code = (int)HttpStatusCode.InternalServerError;
-                        responseService.Message = InsertResult.Message;
-                        responseService.Success = false;
-
-                        return BadRequest(responseService);
+                        response.Code = (int)HttpStatusCode.InternalServerError;
+                        return BadRequest(response);
                     }
                 }
+                // No supera las validaciones
                 else
                 {
-                    responseService.Code = (int)HttpStatusCode.BadRequest;
-                    responseService.Message = validation.Message;
-                    responseService.RequestErros = validation.Erros.ToDictionary();
+                    response.Code = (int)HttpStatusCode.BadRequest;
+                    response.Message = validation.Message;
+                    response.RequestErros = validation.Erros.ToDictionary();
 
-                    return BadRequest(responseService);
-
+                    return BadRequest(response);
                 }
 
             }
@@ -71,7 +72,6 @@ namespace CRUD.Controllers
 
         }
 
-        // Consulta un cliente por su numero de identificación
         [Authorize]
         [HttpGet("ReadAsync/{identificationNumber}")]
         public async Task<IActionResult> ReadAsync(string identificationNumber)
@@ -127,62 +127,58 @@ namespace CRUD.Controllers
 
         }
 
-        // Crea un cliente.
         [Authorize]
         [HttpPut("UpdateAsync")]
         public async Task<IActionResult> UpdateAsync([FromBody] ClientModel client)
         {
-            ResponseModel responseService = new();
+            ResponseModel response = new();
             try
             {
                 // Verifica si el request cumple con la estructura y valores correctos
                 ValidationModel validation = await _clientValidation.UpdateAsync(client);
+
+                // Supera las validaciones
                 if (validation.Success)
                 {
-                    ResponseModel InsertResult = await _clientService.UpdateAsync(client);
-                    if (InsertResult.Success)
-                    {
-                        responseService.Code = (int)HttpStatusCode.OK;
-                        responseService.Message = InsertResult.Message;
-                        responseService.Success = true;
+                    // Intenta actualizar
+                    response = await _clientService.UpdateAsync(client);
 
-                        return Ok(responseService);
+                    // Actualización correcta
+                    if (response.Success)
+                    {
+                        response.Code = (int)HttpStatusCode.OK;
+                        return Ok(response);
                     }
+                    // Fallo la actualización
                     else
                     {
-                        responseService.Code = (int)HttpStatusCode.InternalServerError;
-                        responseService.Message = InsertResult.Message;
-                        responseService.Success = false;
-
-                        return BadRequest(responseService);
+                        response.Code = (int)HttpStatusCode.InternalServerError;
+                        return BadRequest(response);
                     }
                 }
+                // No supera las validaciones
                 else
                 {
-                    responseService.Code = (int)HttpStatusCode.BadRequest;
-                    responseService.Message = validation.Message;
-                    responseService.RequestErros = validation.Erros;
+                    response.Code = (int)HttpStatusCode.BadRequest;
+                    response.Message = validation.Message;
+                    response.RequestErros = validation.Erros;
 
-                    return BadRequest(responseService);
-
+                    return BadRequest(response);
                 }
-
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 return StatusCode(500, ex.Message);
             }
 
         }
 
-        // Elimina un cliente
         [Authorize]
         [HttpDelete("DeleteAsync/{identificationNumber}")]
         public async Task<IActionResult> DeleteAsync(string identificationNumber)
         {
 
-            ResponseModel responseModel = new();
+            ResponseModel response = new();
 
             try
             {
@@ -193,27 +189,21 @@ namespace CRUD.Controllers
                 if (validation.Success)
                 {
                     // Elimina el cliente y todo lo realcionado a el en BD
-                    ResponseModel result = await _clientService.DeleteAsync(identificationNumber);
+                    response = await _clientService.DeleteAsync(identificationNumber);
 
                     //Si el resultado es exitoso
-                    if (result.Success)
+                    if (response.Success)
                     {
                         // Seteamos los datos para que el servicio responda
-                        responseModel.Code = (int)HttpStatusCode.OK;
-                        responseModel.Message = result.Message;
-                        responseModel.Success = result.Success;
-                        responseModel.Data = result.Data;
-
-                        return Ok(responseModel);
+                        response.Code = (int)HttpStatusCode.OK;
+                        return Ok(response);
                     }
                     // No encontrado
                     else
                     {
                         // Seteamos los datos para que el servicio responda
-                        responseModel.Code = (int)HttpStatusCode.NotFound;
-                        responseModel.Message = result.Message;
-
-                        return NotFound(responseModel);
+                        response.Code = (int)HttpStatusCode.NotFound;
+                        return NotFound(response);
                     }
 
                 }
@@ -221,11 +211,11 @@ namespace CRUD.Controllers
                 else
                 {
                     // Seteamos los datos para que el servicio responda 
-                    responseModel.Success = false;
-                    responseModel.Message = validation.Message;
-                    responseModel.RequestErros = validation.Erros;
+                    response.Success = false;
+                    response.Message = validation.Message;
+                    response.RequestErros = validation.Erros;
 
-                    return BadRequest(responseModel);
+                    return BadRequest(response);
                 }
 
             }

@@ -12,18 +12,18 @@ namespace CRUD.Controllers
     [Route("[controller]")]
     public class ClientContactController : ControllerBase
     {
-        // Inyecciones
+        // Variables
         private readonly IClientContactService _contactService;
         private readonly IClientContactValidation _contactValidation;
 
+        // Constructor
         public ClientContactController(IClientContactService contactService, IClientContactValidation clientContact)
         {
             _contactService = contactService;
             _contactValidation = clientContact;
         }
 
-        // Crea un cliente
-
+        // Servicios
         [Authorize]
         [HttpPost("CreateAsync")]
         public async Task<IActionResult> CreateAsync([FromBody] ClientContactModel contact)
@@ -39,13 +39,11 @@ namespace CRUD.Controllers
                     if (response.Success)
                     {
                         response.Code = (int)HttpStatusCode.OK;
-
                         return Ok(response);
                     }
                     else
                     {
                         response.Code = (int)HttpStatusCode.Conflict;
-
                         return Conflict(response);
                     }
                 }
@@ -56,9 +54,7 @@ namespace CRUD.Controllers
                     response.RequestErros = validation.Erros;
 
                     return BadRequest(response);
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -68,7 +64,6 @@ namespace CRUD.Controllers
 
         }
 
-        // Consulta un por el id
         [Authorize]
         [HttpGet("ReadAsync/{idClient}")]
         public async Task<IActionResult> ReadAsync(int idClient)
@@ -121,7 +116,6 @@ namespace CRUD.Controllers
 
         }
 
-        // Crea un cliente
         [Authorize]
         [HttpPut("UpdateAsync")]
         public async Task<IActionResult> UpdateAsync([FromBody] ClientContactModel contact)
@@ -164,7 +158,6 @@ namespace CRUD.Controllers
 
         }
 
-        // Crea un cliente
         [Authorize]
         [HttpDelete("DeleteAsync/{idClient}")]
         public async Task<IActionResult> DeleteAsync(int idClient)
