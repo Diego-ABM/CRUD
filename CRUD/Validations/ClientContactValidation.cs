@@ -24,7 +24,7 @@ namespace CRUD.Validations
                 // Crear una lista de tareas
                 List<Task> tasks =
                     [
-                        Task.Run(() => ValidateId(erros, contact.IdCliente)),
+                        Task.Run(() => ValidateIdClient(erros, contact.IdCliente)),
                         Task.Run(() => ValidateIdcountry(erros, contact.IdCodigoPais)),
                         Task.Run(() => ValidatePhoneType(erros, contact.TipoTelefono)),
                         Task.Run(() =>  ValidatePhoneNumber(erros, contact.NumeroTelefono))
@@ -167,11 +167,14 @@ namespace CRUD.Validations
         private static void ValidatePhoneType(ConcurrentDictionary<string, List<string>> erros, string phone)
         {
             // Valores aceptados en BD fijo o movil
+            List<string> PhoneType = ["fijo", "movil"];
 
-            if (phone != "fijo" || phone != "movil")
+            if (!PhoneType.Contains(phone))
             {
                 erros.TryAdd("tipoTelefono", ["Solo se aceptan valores fijo o movil"]);
             }
+
+
 
         }
         private static void ValidatePhoneNumber(ConcurrentDictionary<string, List<string>> erros, string phone)
